@@ -98,13 +98,43 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (Populated by roadmapper) | | |
+| ENG-01 | Phase 1 | Pending |
+| ENG-02 | Phase 1 | Pending |
+| ENG-03 | Phase 1 | Pending |
+| ENG-04 | Phase 1 | Pending |
+| PIPE-01 | Phase 2 | Pending |
+| PIPE-02 | Phase 2 | Pending |
+| PIPE-03 | Phase 2 | Pending |
+| PIPE-04 | Phase 2 | Pending |
+| TRUTH-01 | Phase 3 | Pending |
+| TRUTH-02 | Phase 3 | Pending |
+| TRUTH-03 | Phase 3 | Pending |
+| PLAN-01 | Phase 3 | Pending |
+| PLAN-02 | Phase 3 | Pending |
+| PLAN-03 | Phase 3 | Pending |
+| PLAN-04 | Phase 3 | Pending |
+| PLAN-05 | Phase 3 | Pending |
+| CODE-01 | Phase 4 | Pending |
+| CODE-02 | Phase 4 | Pending |
+| CODE-03 | Phase 4 | Pending |
+| CODE-04 | Phase 4 | Pending |
+| RECOV-01 | Phase 4 | Pending |
+| RECOV-02 | Phase 4 | Pending |
+| RECOV-03 | Phase 4 | Pending |
+| RECOV-04 | Phase 4 | Pending |
+| OBS-01 | Phase 5 | Pending |
+| OBS-02 | Phase 5 | Pending |
+| OBS-03 | Phase 5 | Pending |
+| UI-01 | Phase 6 | Pending |
+| UI-02 | Phase 6 | Pending |
+| UI-03 | Phase 6 | Pending |
+| UI-04 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 27 total
-- Mapped to phases: 0
-- Unmapped: 27 ⚠️
+- v1 requirements: 31 total (note: file previously said 27 — actual count is 31)
+- Mapped to phases: 31
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-05*
-*Last updated: 2026-04-05 after initial definition*
+*Last updated: 2026-04-05 after roadmap creation — traceability populated*
