@@ -37,7 +37,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Calling detent-tools.cjs state-write with valid JSON atomically updates .detent/state.json and survives a /clear boundary (file persists with correct content)
   4. .detent/state.json schema includes pipeline stage, current unit, iteration count, and reentry_depth fields from day one
   5. .detent/config.json stores mode, model budget, locale, pipeline stage toggles, and unit granularity — and is readable outside any agent session
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 01-01-PLAN.md — detent-tools.cjs CLI with all commands, package.json, test suite
+- [ ] 01-02-PLAN.md — /detent:setup skill with interactive config wizard
 
 ### Phase 2: Pipeline Skeleton
 **Goal**: All five workflow skills exist and the end-to-end pipeline runs — discovery through achieve — with two-mode gate behavior and session continuity, before any production agent templates are added
@@ -105,7 +108,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 1. State Infrastructure | M1 Engine | 0/? | Not started | - |
+| 1. State Infrastructure | M1 Engine | 0/2 | Planning complete | - |
 | 2. Pipeline Skeleton | M1 Engine | 0/? | Not started | - |
 | 3. Truth Surface and Planning Agents | M2 Agents | 0/? | Not started | - |
 | 4. Coding Loop and Recovery | M2 Agents | 0/? | Not started | - |
