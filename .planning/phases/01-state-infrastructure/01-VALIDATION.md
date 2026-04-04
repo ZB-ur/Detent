@@ -2,8 +2,8 @@
 phase: 1
 slug: state-infrastructure
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-04-05
 ---
 
@@ -17,18 +17,18 @@ created: 2026-04-05
 
 | Property | Value |
 |----------|-------|
-| **Framework** | Node.js built-in test runner (node --test) |
-| **Config file** | none — Wave 0 installs |
-| **Quick run command** | `node --test tests/` |
-| **Full suite command** | `node --test tests/` |
+| **Framework** | Custom test runner (test/run-tests.js) using Node.js built-in assert + child_process |
+| **Config file** | none |
+| **Quick run command** | `node test/run-tests.js` |
+| **Full suite command** | `node test/run-tests.js` |
 | **Estimated runtime** | ~5 seconds |
 
 ---
 
 ## Sampling Rate
 
-- **After every task commit:** Run `node --test tests/`
-- **After every plan wave:** Run `node --test tests/`
+- **After every task commit:** Run `node test/run-tests.js`
+- **After every plan wave:** Run `node test/run-tests.js`
 - **Before `/gsd:verify-work`:** Full suite must be green
 - **Max feedback latency:** 5 seconds
 
@@ -38,22 +38,22 @@ created: 2026-04-05
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 1-01-01 | 01 | 1 | ENG-01 | unit | `node --test tests/cli-usage.test.cjs` | ❌ W0 | ⬜ pending |
-| 1-01-02 | 01 | 1 | ENG-02 | unit | `node --test tests/state-write.test.cjs` | ❌ W0 | ⬜ pending |
-| 1-01-03 | 01 | 1 | ENG-03 | unit | `node --test tests/config.test.cjs` | ❌ W0 | ⬜ pending |
-| 1-01-04 | 01 | 1 | ENG-04 | integration | `node --test tests/setup-skill.test.cjs` | ❌ W0 | ⬜ pending |
+| 1-01-01 | 01 | 1 | ENG-01 | unit | `node test/run-tests.js` | Plan 01-01 creates | ⬜ pending |
+| 1-01-02 | 01 | 1 | ENG-02 | unit | `node test/run-tests.js` | Plan 01-01 creates | ⬜ pending |
+| 1-01-03 | 01 | 1 | ENG-03 | unit | `node test/run-tests.js` | Plan 01-01 creates | ⬜ pending |
+| 1-01-04 | 01 | 1 | ENG-01-04 | unit | `node test/run-tests.js` | Plan 01-01 creates | ⬜ pending |
+| 1-02-01 | 02 | 2 | ENG-04 | integration | Manual: invoke `/detent:setup` | N/A (skill test) | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+
+**Note:** Plan 01-01 Task 2 is TDD — it creates `test/run-tests.js` as its first step (RED phase), then implements `detent-tools.cjs` (GREEN phase). No separate Wave 0 is needed because the test file is created within the same task that implements the code.
 
 ---
 
 ## Wave 0 Requirements
 
-- [ ] `tests/cli-usage.test.cjs` — stubs for ENG-01 (CLI usage output)
-- [ ] `tests/state-write.test.cjs` — stubs for ENG-02 (atomic state write + persistence)
-- [ ] `tests/config.test.cjs` — stubs for ENG-03 (config schema fields)
-- [ ] `tests/setup-skill.test.cjs` — stubs for ENG-04 (setup skill integration)
-- [ ] `npm install write-file-atomic@^7` — dependency for atomic writes
+- [x] No Wave 0 needed — Plan 01-01 Task 2 creates test/run-tests.js as part of its TDD workflow (RED before GREEN)
+- [ ] `npm install write-file-atomic@^7` — dependency for atomic writes (Plan 01-01 Task 1)
 
 ---
 
@@ -68,11 +68,11 @@ created: 2026-04-05
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 5s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references (none needed — TDD task creates tests inline)
+- [x] No watch-mode flags
+- [x] Feedback latency < 5s
+- [x] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** pending
