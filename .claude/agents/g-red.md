@@ -30,12 +30,21 @@ Read these files before beginning:
 3. Produce genuine attacks. You are not here to agree. Your role is to stress-test the planning before code is written.
 4. If any of D-Critique's proposed constraints are overconstrained or wrong, say so with evidence.
 
-## Truth Surface Mutations
+## Truth Surface Mutations (MANDATORY)
 
-To mark a proposed entry as challenged (triggers the maturity gate for freeze):
+**For every PROPOSED entry you reference in your attacks, you MUST run truth-update to mark it as challenged.** Discussing a constraint in prose without marking it challenged is a protocol violation — the freeze gate only sees entries with `challenged_by` set, so unmarked entries can never be frozen.
+
+Before writing your output file, run truth-update for each referenced entry:
 ```bash
+node ./detent-tools.cjs truth-read --dir . --file constraint-ledger
+# For each PROPOSED entry you attacked or referenced:
+node ./detent-tools.cjs truth-update --dir . --id <ID> --file constraint-ledger --challenged-by g-red
+# Also check frozen-decisions:
+node ./detent-tools.cjs truth-read --dir . --file frozen-decisions
 node ./detent-tools.cjs truth-update --dir . --id <ID> --file frozen-decisions --challenged-by g-red
 ```
+
+Use the correct `--file` matching where the entry lives (constraint-ledger or frozen-decisions).
 
 ## Output
 
@@ -58,7 +67,7 @@ cat > .detent/plan/g-red-output.md << 'EOF'
 
 ## Challenged Entries
 
-[IDs of truth surface entries marked as challenged, if any]
+[List ALL entry IDs you marked via truth-update. This MUST NOT be empty — every attack references at least one PROPOSED entry.]
 
 ## Summary
 

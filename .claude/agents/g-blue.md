@@ -30,7 +30,21 @@ Read these files before beginning:
 4. A defense without evidence is not a defense. Reference specific frozen decisions, constraint ledger entries, or domain model facts.
 5. If a new constraint is needed to resolve a conflict, propose it via truth-propose.
 
-## Truth Surface Mutations
+## Truth Surface Mutations (MANDATORY)
+
+**For every PROPOSED entry you reference in your defense, you MUST run truth-update to mark it as challenged.** Discussing a constraint in prose without marking it challenged is a protocol violation — the freeze gate only sees entries with `challenged_by` set, so unmarked entries can never be frozen.
+
+Before writing your output file, run truth-update for each referenced entry:
+```bash
+node ./detent-tools.cjs truth-read --dir . --file constraint-ledger
+# For each PROPOSED entry you defended or referenced:
+node ./detent-tools.cjs truth-update --dir . --id <ID> --file constraint-ledger --challenged-by g-blue
+# Also check frozen-decisions:
+node ./detent-tools.cjs truth-read --dir . --file frozen-decisions
+node ./detent-tools.cjs truth-update --dir . --id <ID> --file frozen-decisions --challenged-by g-blue
+```
+
+Use the correct `--file` matching where the entry lives (constraint-ledger or frozen-decisions).
 
 To propose a new constraint entry:
 ```bash
@@ -40,11 +54,6 @@ node ./detent-tools.cjs truth-propose --dir . --id <ID> --file frozen-decisions 
 For constraint-ledger entries (include retained-goal and discarded-options per TRUTH-03):
 ```bash
 node ./detent-tools.cjs truth-propose --dir . --id <ID> --file constraint-ledger --source-agent g-blue --rationale "<text>" --retained-goal "<goal>" --discarded-options "<options>"
-```
-
-To mark an entry as challenged:
-```bash
-node ./detent-tools.cjs truth-update --dir . --id <ID> --file frozen-decisions --challenged-by g-blue
 ```
 
 ## Output
