@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-05)
 Phase: 4
 Plan: Not started
 Status: Ready to execute
-Last activity: 2026-04-05
+Last activity: 2026-04-06 - Completed quick task 260406-0ot: Fix spawn --agent parameter
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -96,6 +96,12 @@ None yet.
 - **M1 blocker (Phase 2):** 50K token re-injection per subprocess turn — subprocess spawner must apply 4-layer isolation before any pipeline work is meaningful. Must be validated against current Claude Code version at implementation time (bugs #771, #17248, #25670 have shifting status).
 - **Research flag (Phase 3):** Adversarial planning prompt contracts (D/G/H/J roles) are novel with limited precedent — consider `/gsd:research-phase` before finalizing Phase 3 agent template tasks.
 - **Research flag (Phase 4):** Cross-stage rollback mechanism is novel — no mainstream framework implements contradiction-as-frozen-input. Design before implementing.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260406-0ot | Fix spawn --verbose flag, add --agent parameter, update SKILL.md spawn calls | 2026-04-06 | eea79ec | [260406-0ot](./quick/260406-0ot-fix-spawn-verbose-flag-add-agent-paramet/) |
 
 ## Session Continuity
 
