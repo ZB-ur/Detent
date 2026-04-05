@@ -31,9 +31,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Truth Surface
 
-- [ ] **TRUTH-01**: .detent/truth-surface/ directory stores constraint-ledger.md, frozen-decisions.md, and domain-model.md
-- [ ] **TRUTH-02**: Frozen decisions are immutable once committed; downstream agents check alignment before executing
-- [ ] **TRUTH-03**: Constraint ledger tracks retained_goal, discarded options, and rationale for each frozen decision
+- [x] **TRUTH-01**: .detent/truth-surface/ directory stores constraint-ledger.md, frozen-decisions.md, and domain-model.md
+- [x] **TRUTH-02**: Frozen decisions are immutable once committed; downstream agents check alignment before executing
+- [x] **TRUTH-03**: Constraint ledger tracks retained_goal, discarded options, and rationale for each frozen decision
 
 ### Coding Quality Loop
 
@@ -106,9 +106,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PIPE-02 | Phase 2 | Complete |
 | PIPE-03 | Phase 2 | Complete |
 | PIPE-04 | Phase 2 | Complete |
-| TRUTH-01 | Phase 3 | Pending |
-| TRUTH-02 | Phase 3 | Pending |
-| TRUTH-03 | Phase 3 | Pending |
+| TRUTH-01 | Phase 3 | Complete |
+| TRUTH-02 | Phase 3 | Complete |
+| TRUTH-03 | Phase 3 | Complete |
 | PLAN-01 | Phase 3 | Complete |
 | PLAN-02 | Phase 3 | Complete |
 | PLAN-03 | Phase 3 | Complete |
