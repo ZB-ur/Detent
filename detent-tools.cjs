@@ -90,6 +90,10 @@ function cmdUsage() {
     '  config-read    Print current .detent/config.json as JSON to stdout',
     '  config-write   Update fields in .detent/config.json (--field value pairs)',
     '  spawn          Spawn a Claude Code subprocess with stream-json output',
+    '  truth-propose  Propose a new entry to a truth surface file',
+    '  truth-freeze   Freeze a mature truth surface entry (makes it immutable)',
+    '  truth-read     Output the contents of a truth surface file to stdout',
+    '  truth-update   Update a field on a PROPOSED truth surface entry',
     '',
     'Setup options:',
     '  --dir <path>        Target directory (default: cwd)',
@@ -103,6 +107,31 @@ function cmdUsage() {
     '  --prompt <text>     Prompt to send to Claude Code (required)',
     '  --target <binary>   Override binary for testing (default: claude)',
     '',
+    'truth-propose options:',
+    '  --dir <path>             Target directory (default: cwd)',
+    '  --id <id>                Entry ID (required, e.g. DECISION-001)',
+    '  --file <name>            Truth surface file name without .md extension (required)',
+    '  --source-agent <name>    Agent proposing this entry (default: unknown)',
+    '  --rationale <text>       Rationale for the entry (default: "")',
+    '  --status <status>        Initial status (default: PROPOSED)',
+    '  --retained-goal <text>   For constraint-ledger: goal being retained (TRUTH-03)',
+    '  --discarded-options <t>  For constraint-ledger: options considered and discarded (TRUTH-03)',
+    '',
+    'truth-freeze options:',
+    '  --dir <path>    Target directory (default: cwd)',
+    '  --id <id>       Entry ID to freeze (required)',
+    '  --file <name>   Truth surface file name without .md extension (required)',
+    '',
+    'truth-read options:',
+    '  --dir <path>    Target directory (default: cwd)',
+    '  --file <name>   Truth surface file name without .md extension (required)',
+    '',
+    'truth-update options:',
+    '  --dir <path>          Target directory (default: cwd)',
+    '  --id <id>             Entry ID to update (required)',
+    '  --file <name>         Truth surface file name without .md extension (required)',
+    '  --challenged-by <n>   Set the challenged_by field on a PROPOSED entry',
+    '',
   ].join('\n'));
   process.exit(0);
 }
@@ -115,6 +144,20 @@ function cmdSetup(targetDir, named) {
   fs.mkdirSync(path.join(dDir, 'truth-surface'), { recursive: true });
   fs.mkdirSync(path.join(dDir, 'raw'), { recursive: true });
   fs.mkdirSync(path.join(dDir, 'logs'), { recursive: true });
+  fs.mkdirSync(path.join(dDir, 'playbooks'), { recursive: true });
+
+  // Initialize truth surface files with structural headers (idempotent — only write if missing)
+  const truthFiles = [
+    { name: 'frozen-decisions.md', header: '# Frozen Decisions\n\nDecisions frozen after adversarial challenge. FROZEN entries are immutable.\n' },
+    { name: 'constraint-ledger.md', header: '# Constraint Ledger\n\nRetained goals, discarded options, and rationale for each constraint.\n' },
+    { name: 'domain-model.md', header: '# Domain Model\n\nDomain concepts and constraints discovered during planning.\n' },
+  ];
+  for (const tf of truthFiles) {
+    const tfPath = path.join(dDir, 'truth-surface', tf.name);
+    if (!fs.existsSync(tfPath)) {
+      writeFileAtomicSync(tfPath, tf.header, { encoding: 'utf8' });
+    }
+  }
 
   // Build default state.json
   const state = {
@@ -240,6 +283,229 @@ function cmdConfigWrite(targetDir, named) {
   writeJson(cPath, config);
 }
 
+// ---------------------------------------------------------------------------
+// Truth surface helpers
+// ---------------------------------------------------------------------------
+
+/** Resolve path to a truth surface .md file. */
+function truthFilePath(targetDir, fileName) {
+  return path.join(detentDir(targetDir), 'truth-surface', fileName + '.md');
+}
+
+// ---------------------------------------------------------------------------
+// Truth surface commands
+// ---------------------------------------------------------------------------
+
+function cmdTruthPropose(targetDir, named) {
+  const id = named.id;
+  const file = named.file;
+
+  if (!id) {
+    process.stderr.write('Error: --id is required for truth-propose\n');
+    process.exit(1);
+  }
+  if (!file) {
+    process.stderr.write('Error: --file is required for truth-propose\n');
+    process.exit(1);
+  }
+
+  requireInit(targetDir);
+
+  const sourceAgent = named['source-agent'] || 'unknown';
+  const rationale = named.rationale || '';
+  const status = named.status || 'PROPOSED';
+  const retainedGoal = named['retained-goal'] || '';
+  const discardedOptions = named['discarded-options'] || '';
+
+  const filePath = truthFilePath(targetDir, file);
+
+  // Initialize file if it doesn't exist
+  let content;
+  if (!fs.existsSync(filePath)) {
+    content = `# ${file}\n\n`;
+  } else {
+    content = fs.readFileSync(filePath, 'utf8');
+  }
+
+  // Check for duplicate entry ID
+  if (content.includes(`## ${id}`)) {
+    process.stderr.write(`Error: Entry ${id} already exists in ${file}.md\n`);
+    process.exit(1);
+  }
+
+  // Append entry block
+  const entry = [
+    `\n## ${id}\n`,
+    `\`\`\`yaml`,
+    `id: ${id}`,
+    `status: ${status}`,
+    `source_agent: ${sourceAgent}`,
+    `challenged_by: null`,
+    `frozen_at: null`,
+    `retained_goal: "${retainedGoal}"`,
+    `discarded_options: "${discardedOptions}"`,
+    `\`\`\``,
+    '',
+    rationale,
+    '',
+  ].join('\n');
+
+  const newContent = content + entry;
+  writeFileAtomicSync(filePath, newContent, { encoding: 'utf8' });
+
+  process.stdout.write(JSON.stringify({ ok: true, id: id }) + '\n');
+}
+
+function cmdTruthFreeze(targetDir, named) {
+  const id = named.id;
+  const file = named.file;
+
+  if (!id) {
+    process.stderr.write('Error: --id is required for truth-freeze\n');
+    process.exit(1);
+  }
+  if (!file) {
+    process.stderr.write('Error: --file is required for truth-freeze\n');
+    process.exit(1);
+  }
+
+  requireInit(targetDir);
+
+  const filePath = truthFilePath(targetDir, file);
+
+  if (!fs.existsSync(filePath)) {
+    process.stderr.write(`Error: File ${file}.md not found\n`);
+    process.exit(1);
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8');
+
+  // Check entry exists
+  if (!content.includes(`## ${id}`)) {
+    process.stderr.write(`Error: Entry ${id} not found. Call truth-propose first.\n`);
+    process.exit(1);
+  }
+
+  // Parse the entry's YAML block (find section from ## id to next ## or end of file)
+  const entryStartIdx = content.indexOf(`## ${id}`);
+  const afterEntry = content.indexOf('\n## ', entryStartIdx + 1);
+  const entrySection = afterEntry === -1 ? content.slice(entryStartIdx) : content.slice(entryStartIdx, afterEntry);
+
+  // Check if already FROZEN
+  const statusMatch = entrySection.match(/status:\s*(\w+)/);
+  if (statusMatch && statusMatch[1] === 'FROZEN') {
+    process.stderr.write(`Error: Entry ${id} is already FROZEN (immutable).\n`);
+    process.exit(1);
+  }
+
+  // Check maturity — challenged_by must not be null
+  const challengedByMatch = entrySection.match(/challenged_by:\s*(\S+)/);
+  if (!challengedByMatch || challengedByMatch[1] === 'null') {
+    process.stderr.write(`Error: Entry ${id} is not mature (missing challenged_by). Cannot freeze.\n`);
+    process.exit(1);
+  }
+
+  // Replace status and frozen_at within this entry's section
+  const frozenAt = new Date().toISOString();
+  let updatedContent = content;
+
+  // Replace the entry section with updated fields
+  const updatedSection = entrySection
+    .replace(/status:\s*PROPOSED/, 'status: FROZEN')
+    .replace(/frozen_at:\s*null/, `frozen_at: ${frozenAt}`);
+
+  if (afterEntry === -1) {
+    updatedContent = content.slice(0, entryStartIdx) + updatedSection;
+  } else {
+    updatedContent = content.slice(0, entryStartIdx) + updatedSection + content.slice(afterEntry);
+  }
+
+  writeFileAtomicSync(filePath, updatedContent, { encoding: 'utf8' });
+
+  process.stdout.write(JSON.stringify({ ok: true, id: id, status: 'FROZEN' }) + '\n');
+}
+
+function cmdTruthRead(targetDir, named) {
+  const file = named.file;
+
+  if (!file) {
+    process.stderr.write('Error: --file is required for truth-read\n');
+    process.exit(1);
+  }
+
+  requireInit(targetDir);
+
+  const filePath = truthFilePath(targetDir, file);
+
+  if (!fs.existsSync(filePath)) {
+    process.stderr.write(`Error: File ${file}.md not found\n`);
+    process.exit(1);
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8');
+  process.stdout.write(content);
+}
+
+function cmdTruthUpdate(targetDir, named) {
+  const id = named.id;
+  const file = named.file;
+
+  if (!id) {
+    process.stderr.write('Error: --id is required for truth-update\n');
+    process.exit(1);
+  }
+  if (!file) {
+    process.stderr.write('Error: --file is required for truth-update\n');
+    process.exit(1);
+  }
+
+  requireInit(targetDir);
+
+  const filePath = truthFilePath(targetDir, file);
+
+  if (!fs.existsSync(filePath)) {
+    process.stderr.write(`Error: File ${file}.md not found\n`);
+    process.exit(1);
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8');
+
+  if (!content.includes(`## ${id}`)) {
+    process.stderr.write(`Error: Entry ${id} not found.\n`);
+    process.exit(1);
+  }
+
+  // Find the entry section
+  const entryStartIdx = content.indexOf(`## ${id}`);
+  const afterEntry = content.indexOf('\n## ', entryStartIdx + 1);
+  const entrySection = afterEntry === -1 ? content.slice(entryStartIdx) : content.slice(entryStartIdx, afterEntry);
+
+  // Check not FROZEN
+  const statusMatch = entrySection.match(/status:\s*(\w+)/);
+  if (statusMatch && statusMatch[1] === 'FROZEN') {
+    process.stderr.write(`Error: Entry ${id} is FROZEN (immutable). Cannot update.\n`);
+    process.exit(1);
+  }
+
+  let updatedSection = entrySection;
+
+  // Update challenged_by if provided
+  if (named['challenged-by']) {
+    updatedSection = updatedSection.replace(/challenged_by:\s*null/, `challenged_by: ${named['challenged-by']}`);
+  }
+
+  let updatedContent;
+  if (afterEntry === -1) {
+    updatedContent = content.slice(0, entryStartIdx) + updatedSection;
+  } else {
+    updatedContent = content.slice(0, entryStartIdx) + updatedSection + content.slice(afterEntry);
+  }
+
+  writeFileAtomicSync(filePath, updatedContent, { encoding: 'utf8' });
+
+  process.stdout.write(JSON.stringify({ ok: true, id: id }) + '\n');
+}
+
 function cmdSpawn(named) {
   const { spawn } = require('child_process');
   const prompt = named.prompt;
@@ -317,6 +583,14 @@ function main() {
       return cmdConfigWrite(targetDir, named);
     case 'spawn':
       return cmdSpawn(named);
+    case 'truth-propose':
+      return cmdTruthPropose(targetDir, named);
+    case 'truth-freeze':
+      return cmdTruthFreeze(targetDir, named);
+    case 'truth-read':
+      return cmdTruthRead(targetDir, named);
+    case 'truth-update':
+      return cmdTruthUpdate(targetDir, named);
     default:
       process.stderr.write(`Unknown command: ${command}\n`);
       process.exit(1);

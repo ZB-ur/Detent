@@ -294,6 +294,140 @@ test('every pipeline skill contains stage-mismatch entry guard', () => {
   }
 });
 
+// --- T24: truth-propose creates entry in file ---
+test('truth-propose creates entry in file', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`truth-propose --dir "${dir}" --id DECISION-001 --file frozen-decisions --source-agent d-critique --rationale "test rationale"`);
+  const content = fs.readFileSync(path.join(dir, '.detent', 'truth-surface', 'frozen-decisions.md'), 'utf8');
+  assert.ok(content.includes('## DECISION-001'), 'File should contain ## DECISION-001 header');
+  assert.ok(content.includes('status: PROPOSED'), 'Entry should have status: PROPOSED');
+  assert.ok(content.includes('source_agent: d-critique'), 'Entry should have source_agent: d-critique');
+  assert.ok(content.includes('challenged_by: null'), 'Entry should have challenged_by: null');
+});
+
+// --- T25: truth-propose with duplicate ID exits non-zero ---
+test('truth-propose with duplicate ID exits non-zero', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`truth-propose --dir "${dir}" --id DECISION-001 --file frozen-decisions --source-agent test --rationale "first"`);
+  const result = runAllowError(`truth-propose --dir "${dir}" --id DECISION-001 --file frozen-decisions --source-agent test --rationale "second"`);
+  assert.strictEqual(result.code, 1, `Expected exit 1 for duplicate ID, got ${result.code}`);
+  assert.ok(result.stderr.includes('already exists'), `Expected "already exists" in stderr, got: ${result.stderr}`);
+});
+
+// --- T26: truth-propose without --id exits non-zero ---
+test('truth-propose without --id exits non-zero', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  const result = runAllowError(`truth-propose --dir "${dir}" --file frozen-decisions --source-agent test --rationale "test"`);
+  assert.strictEqual(result.code, 1, `Expected exit 1 for missing --id, got ${result.code}`);
+  assert.ok(result.stderr.includes('required'), `Expected "required" in stderr, got: ${result.stderr}`);
+});
+
+// --- T27: truth-freeze on entry with challenged_by=null exits non-zero ---
+test('truth-freeze on entry with challenged_by=null exits non-zero (not mature)', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`truth-propose --dir "${dir}" --id DECISION-001 --file frozen-decisions --source-agent test --rationale "test"`);
+  const result = runAllowError(`truth-freeze --dir "${dir}" --id DECISION-001 --file frozen-decisions`);
+  assert.strictEqual(result.code, 1, `Expected exit 1 for immature entry, got ${result.code}`);
+  assert.ok(result.stderr.includes('not mature') || result.stderr.includes('challenged_by'), `Expected maturity error in stderr, got: ${result.stderr}`);
+});
+
+// --- T28: truth-update sets challenged_by; then truth-freeze succeeds ---
+test('truth-update sets challenged_by field; then truth-freeze succeeds and entry is FROZEN', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`truth-propose --dir "${dir}" --id DECISION-001 --file frozen-decisions --source-agent d-critique --rationale "test"`);
+  run(`truth-update --dir "${dir}" --id DECISION-001 --file frozen-decisions --challenged-by g-red`);
+  run(`truth-freeze --dir "${dir}" --id DECISION-001 --file frozen-decisions`);
+  const content = fs.readFileSync(path.join(dir, '.detent', 'truth-surface', 'frozen-decisions.md'), 'utf8');
+  assert.ok(content.includes('status: FROZEN'), 'Entry should have status: FROZEN after freeze');
+  assert.ok(!content.includes('frozen_at: null'), 'frozen_at should not be null after freeze');
+});
+
+// --- T29: truth-freeze on already FROZEN entry exits non-zero ---
+test('truth-freeze on already FROZEN entry exits non-zero', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`truth-propose --dir "${dir}" --id DECISION-001 --file frozen-decisions --source-agent test --rationale "test"`);
+  run(`truth-update --dir "${dir}" --id DECISION-001 --file frozen-decisions --challenged-by g-red`);
+  run(`truth-freeze --dir "${dir}" --id DECISION-001 --file frozen-decisions`);
+  const result = runAllowError(`truth-freeze --dir "${dir}" --id DECISION-001 --file frozen-decisions`);
+  assert.strictEqual(result.code, 1, `Expected exit 1 for already FROZEN entry, got ${result.code}`);
+  assert.ok(result.stderr.includes('already FROZEN') || result.stderr.includes('FROZEN'), `Expected FROZEN error in stderr, got: ${result.stderr}`);
+});
+
+// --- T30: truth-freeze on non-existent ID exits non-zero ---
+test('truth-freeze on non-existent ID exits non-zero', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  const result = runAllowError(`truth-freeze --dir "${dir}" --id NONEXISTENT-001 --file frozen-decisions`);
+  assert.strictEqual(result.code, 1, `Expected exit 1 for non-existent ID, got ${result.code}`);
+  assert.ok(result.stderr.includes('not found') || result.stderr.includes('NONEXISTENT-001'), `Expected "not found" in stderr, got: ${result.stderr}`);
+});
+
+// --- T31: truth-read outputs file contents ---
+test('truth-read outputs file contents to stdout', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`truth-propose --dir "${dir}" --id DECISION-001 --file frozen-decisions --source-agent test --rationale "some rationale"`);
+  const stdout = run(`truth-read --dir "${dir}" --file frozen-decisions`);
+  assert.ok(stdout.includes('## DECISION-001'), 'truth-read should output file contents including entry header');
+  assert.ok(stdout.includes('PROPOSED'), 'truth-read should include PROPOSED status');
+});
+
+// --- T32: truth-read on missing file exits non-zero ---
+test('truth-read on missing file exits non-zero', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  const result = runAllowError(`truth-read --dir "${dir}" --file nonexistent-file`);
+  assert.strictEqual(result.code, 1, `Expected exit 1 for missing file, got ${result.code}`);
+  assert.ok(result.stderr.includes('not found') || result.stderr.includes('nonexistent-file'), `Expected "not found" in stderr, got: ${result.stderr}`);
+});
+
+// --- T33: setup creates .detent/playbooks/ directory ---
+test('setup creates .detent/playbooks/ directory', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  assert.ok(fs.existsSync(path.join(dir, '.detent', 'playbooks')), '.detent/playbooks/ should exist after setup');
+});
+
+// --- T34: setup creates truth surface files with structural headers ---
+test('setup creates truth surface files with structural headers', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  const frozenContent = fs.readFileSync(path.join(dir, '.detent', 'truth-surface', 'frozen-decisions.md'), 'utf8');
+  assert.ok(frozenContent.includes('# Frozen Decisions'), 'frozen-decisions.md should have "# Frozen Decisions" header');
+  const constraintContent = fs.readFileSync(path.join(dir, '.detent', 'truth-surface', 'constraint-ledger.md'), 'utf8');
+  assert.ok(constraintContent.includes('# Constraint Ledger'), 'constraint-ledger.md should have "# Constraint Ledger" header');
+  const domainContent = fs.readFileSync(path.join(dir, '.detent', 'truth-surface', 'domain-model.md'), 'utf8');
+  assert.ok(domainContent.includes('# Domain Model'), 'domain-model.md should have "# Domain Model" header');
+});
+
+// --- T35: truth-propose with --retained-goal and --discarded-options stores those fields (TRUTH-03) ---
+test('truth-propose with --retained-goal and --discarded-options stores them in YAML block (TRUTH-03)', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`truth-propose --dir "${dir}" --id CONSTRAINT-001 --file constraint-ledger --source-agent d-critique --rationale "constraint rationale" --retained-goal "keep X simple" --discarded-options "Y; Z"`);
+  const content = fs.readFileSync(path.join(dir, '.detent', 'truth-surface', 'constraint-ledger.md'), 'utf8');
+  assert.ok(content.includes('retained_goal:'), 'Entry should have retained_goal field');
+  assert.ok(content.includes('keep X simple'), 'retained_goal should contain the provided value');
+  assert.ok(content.includes('discarded_options:'), 'Entry should have discarded_options field');
+  assert.ok(content.includes('Y; Z'), 'discarded_options should contain the provided value');
+});
+
+// --- T36: truth-propose without --retained-goal defaults to empty string in YAML block ---
+test('truth-propose without --retained-goal defaults to empty string in YAML block', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`truth-propose --dir "${dir}" --id DECISION-002 --file frozen-decisions --source-agent test --rationale "test"`);
+  const content = fs.readFileSync(path.join(dir, '.detent', 'truth-surface', 'frozen-decisions.md'), 'utf8');
+  assert.ok(content.includes('retained_goal: ""'), 'retained_goal should default to empty string ""');
+  assert.ok(content.includes('discarded_options: ""'), 'discarded_options should default to empty string ""');
+});
+
 // --- cleanup ---
 try {
   fs.rmSync(tmpDir, { recursive: true, force: true });
