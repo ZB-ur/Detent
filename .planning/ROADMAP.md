@@ -84,9 +84,9 @@ Plans:
   3. When any agent raises an algedonic signal, the pipeline immediately halts and surfaces the contradiction to the human — bypassing all normal gate logic
   4. A cross-stage reentry triggered by the Evaluator rolls back to the specified Planning substage and injects the contradiction as a new frozen constraint in constraint-ledger.md
   5. When reentry_depth reaches 2, further reentry triggers human escalation instead of another rollback
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
-- [ ] 04-01-PLAN.md — CLI extensions (total_units intField, truth-freeze --source bypass), Coder/Evaluator agent templates, playbook extension, Phase 4 tests
+- [x] 04-01-PLAN.md — CLI extensions (total_units intField, truth-freeze --source bypass), Coder/Evaluator agent templates, playbook extension, Phase 4 tests
 - [ ] 04-02-PLAN.md — /detent:code skill rewrite as Coder/Evaluator orchestrator with iteration loop, verdict routing, reentry, algedonic handling
 
 ### Phase 5: Observability
@@ -121,6 +121,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. State Infrastructure | M1 Engine | 2/2 | Complete |  |
 | 2. Pipeline Skeleton | M1 Engine | 2/2 | Complete   | 2026-04-05 |
 | 3. Truth Surface and Planning Agents | M2 Agents | 3/3 | Complete | 2026-04-06 |
-| 4. Coding Loop and Recovery | M2 Agents | 0/2 | Planning complete | - |
+| 4. Coding Loop and Recovery | M2 Agents | 1/2 | In Progress|  |
 | 5. Observability | M2 Agents | 0/? | Not started | - |
 | 6. Web UI | M3 Web UI | 0/? | Not started | - |
