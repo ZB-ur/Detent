@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 02-pipeline-skeleton plan 01 (spawn command + gates config + shared rules)
-last_updated: "2026-04-05T12:57:08.585Z"
+status: verifying
+stopped_at: Completed 02-pipeline-skeleton plan 02 (five pipeline skills + skill validation tests)
+last_updated: "2026-04-05T13:01:22.520Z"
 last_activity: 2026-04-05
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-05)
 
 Phase: 02 (pipeline-skeleton) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-05
 
 Progress: [░░░░░░░░░░] 0%
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-state-infrastructure P01 | 2min | 2 tasks | 4 files |
 | Phase 01-state-infrastructure P02 | 7min | 2 tasks | 1 files |
 | Phase 02-pipeline-skeleton P01 | 9min | 2 tasks | 3 files |
+| Phase 02-pipeline-skeleton P02 | 2min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ Recent decisions affecting current work:
 - [Phase 02-pipeline-skeleton]: gates defaults all enabled (plan/code/deploy) for safe supervised mode out of the box
 - [Phase 02-pipeline-skeleton]: spawn --target flag allows binary override for testing without requiring live Claude CLI
 - [Phase 02-pipeline-skeleton]: shared rules.md @-referenced by all pipeline skills to enforce single-mutation-point invariant
+- [Phase 02-pipeline-skeleton]: AskUserQuestion included in all 5 skill allowed-tools -- config can add gates without frontmatter changes
+- [Phase 02-pipeline-skeleton]: /detent:discovery accepts both idle and discovery entry states -- dual-entry intentional for re-run support
+- [Phase 02-pipeline-skeleton]: Code gate placed after artifact creation, before state-write -- user reviews actual content before it advances the pipeline
 
 ### Pending Todos
 
@@ -89,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-05T12:57:08.582Z
-Stopped at: Completed 02-pipeline-skeleton plan 01 (spawn command + gates config + shared rules)
+Last session: 2026-04-05T13:01:22.517Z
+Stopped at: Completed 02-pipeline-skeleton plan 02 (five pipeline skills + skill validation tests)
 Resume file: None

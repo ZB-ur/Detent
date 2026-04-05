@@ -19,7 +19,7 @@ Detent is a control-theory harness framework for multi-agent orchestration in Cl
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: State Infrastructure** - CLI tool, .detent/ schemas, and setup skill — the foundation everything else writes to
-- [ ] **Phase 2: Pipeline Skeleton** - Five workflow skills and two-mode gate architecture — end-to-end pipeline that proves session bridging before agents exist
+- [x] **Phase 2: Pipeline Skeleton** - Five workflow skills and two-mode gate architecture — end-to-end pipeline that proves session bridging before agents exist (completed 2026-04-05)
 - [ ] **Phase 3: Truth Surface and Planning Agents** - Constraint ledger, frozen decisions, and adversarial planning agent templates (D/G/H/J)
 - [ ] **Phase 4: Coding Loop and Recovery** - Coder/Evaluator adversarial loop, cross-stage reentry, algedonic signal routing
 - [ ] **Phase 5: Observability** - Gemini CLI async behavior logging, raw JSONL capture, locale-aware outputs
@@ -52,10 +52,10 @@ Plans:
   3. In autonomous mode, the same pipeline runs without pausing at any gate
   4. After a /clear boundary mid-pipeline, invoking the next skill resumes from the correct state position (not from the beginning)
   5. The subprocess spawner applies scoped working directory isolation with an extensible interface for adding further isolation layers (additional layers deferred to Phase 3+) — confirmed by running a pipeline and observing no 50K token re-injection overhead
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 Plans:
 - [x] 02-01-PLAN.md — spawn command, gates config, shared rules, infrastructure tests
-- [ ] 02-02-PLAN.md — five pipeline workflow skills with gate checks and structure tests
+- [x] 02-02-PLAN.md — five pipeline workflow skills with gate checks and structure tests
 
 ### Phase 3: Truth Surface and Planning Agents
 **Goal**: Constraint propagation is real — frozen decisions exist in .detent/truth-surface/, agent templates for all planning stages are defined, and the adversarial planning pipeline (D → G-Red/Blue → H → J) runs end-to-end
@@ -112,7 +112,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1. State Infrastructure | M1 Engine | 2/2 | Complete |  |
-| 2. Pipeline Skeleton | M1 Engine | 0/2 | In Progress | - |
+| 2. Pipeline Skeleton | M1 Engine | 2/2 | Complete   | 2026-04-05 |
 | 3. Truth Surface and Planning Agents | M2 Agents | 0/? | Not started | - |
 | 4. Coding Loop and Recovery | M2 Agents | 0/? | Not started | - |
 | 5. Observability | M2 Agents | 0/? | Not started | - |
