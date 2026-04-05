@@ -69,7 +69,7 @@ Plans:
   5. The J-Compile agent template produces an executable code handoff document that a Coder agent can act on without further clarification
 **Plans:** 1/3 plans executed
 Plans:
-- [ ] 03-01-PLAN.md — Truth surface CLI commands (truth-propose, truth-freeze, truth-read) + tests
+- [x] 03-01-PLAN.md — Truth surface CLI commands (truth-propose, truth-freeze, truth-read) + tests
 - [x] 03-02-PLAN.md — Five agent templates (D/G-Red/G-Blue/H/J) + three playbook files
 - [ ] 03-03-PLAN.md — /detent:plan skill rewrite as sequential agent orchestrator + setup updates
 **UI hint**: no
