@@ -51,7 +51,7 @@ Plans:
   2. In supervised mode, the pipeline pauses at defined gate points and resumes correctly after human confirmation
   3. In autonomous mode, the same pipeline runs without pausing at any gate
   4. After a /clear boundary mid-pipeline, invoking the next skill resumes from the correct state position (not from the beginning)
-  5. The subprocess spawner applies 4-layer isolation (scoped working directory, .git/HEAD block, empty plugin dir, project-only settings) — confirmed by running a pipeline and observing no 50K token re-injection overhead
+  5. The subprocess spawner applies scoped working directory isolation with an extensible interface for adding further isolation layers (additional layers deferred to Phase 3+) — confirmed by running a pipeline and observing no 50K token re-injection overhead
 **Plans:** 2 plans
 Plans:
 - [ ] 02-01-PLAN.md — spawn command, gates config, shared rules, infrastructure tests
