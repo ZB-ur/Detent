@@ -133,6 +133,14 @@ Read the state that was initialized:
 node ./detent-tools.cjs state-read --dir .
 ```
 
+Verify that playbooks directory and truth surface files were created:
+
+```bash
+test -d .detent/playbooks && test -f .detent/truth-surface/frozen-decisions.md && echo "INIT_OK" || echo "INIT_FAILED"
+```
+
+If the output is "INIT_FAILED", report: "Setup completed but verification failed -- expected .detent/playbooks/ directory and .detent/truth-surface/frozen-decisions.md to exist. Check detent-tools.cjs output above for errors."
+
 Print a summary to the user:
 
 ```
@@ -141,12 +149,16 @@ Setup complete. The following were created:
 Directories:
   .detent/
   .detent/truth-surface/
+  .detent/playbooks/
   .detent/raw/
   .detent/logs/
 
 Files:
   .detent/config.json
   .detent/state.json
+  .detent/truth-surface/frozen-decisions.md
+  .detent/truth-surface/constraint-ledger.md
+  .detent/truth-surface/domain-model.md
 
 Configuration:
   mode:             <mode>

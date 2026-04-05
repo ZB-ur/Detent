@@ -428,6 +428,105 @@ test('truth-propose without --retained-goal defaults to empty string in YAML blo
   assert.ok(content.includes('discarded_options: ""'), 'discarded_options should default to empty string ""');
 });
 
+// --- T37: /detent:plan SKILL.md exists and contains spawn ---
+test('/detent:plan SKILL.md exists and contains detent-tools.cjs spawn', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-plan', 'SKILL.md');
+  assert.ok(fs.existsSync(skillPath), 'detent-plan/SKILL.md missing');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('detent-tools.cjs spawn'), 'detent-plan SKILL.md should contain detent-tools.cjs spawn');
+});
+
+// --- T38: /detent:plan SKILL.md references h-review-verdict.json for routing ---
+test('/detent:plan SKILL.md contains h-review-verdict.json (reads H verdict for routing)', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-plan', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('h-review-verdict.json'), 'detent-plan SKILL.md should reference h-review-verdict.json for routing');
+});
+
+// --- T39: /detent:plan SKILL.md does not contain Write in allowed-tools ---
+test('/detent:plan SKILL.md does not have Write in allowed-tools', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-plan', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  // Extract the frontmatter block (between first --- and second ---)
+  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  assert.ok(frontmatterMatch, 'SKILL.md should have YAML frontmatter');
+  const frontmatter = frontmatterMatch[1];
+  assert.ok(!frontmatter.includes('Write'), 'detent-plan SKILL.md should not have Write in allowed-tools frontmatter');
+});
+
+// --- T40: /detent:plan SKILL.md contains truth-freeze (supervised gate per D-02) ---
+test('/detent:plan SKILL.md contains truth-freeze (supervised-mode freeze gate per D-02)', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-plan', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('truth-freeze'), 'detent-plan SKILL.md should contain truth-freeze for supervised gate');
+});
+
+// --- T41: All 5 agent template files exist in .claude/agents/ ---
+test('all 5 agent template files exist in .claude/agents/', () => {
+  const agents = ['d-critique', 'g-red', 'g-blue', 'h-review', 'j-compile'];
+  for (const agent of agents) {
+    const agentPath = path.join(__dirname, '..', '.claude', 'agents', `${agent}.md`);
+    assert.ok(fs.existsSync(agentPath), `${agent}.md missing from .claude/agents/`);
+  }
+});
+
+// --- T42: D-Critique agent has Read, Bash tools only (no Write) ---
+test('d-critique agent has tools: Read, Bash (no Write)', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'd-critique.md');
+  assert.ok(fs.existsSync(agentPath), 'd-critique.md missing');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.includes('tools: Read, Bash'), 'Expected tools: Read, Bash in d-critique.md');
+  assert.ok(!content.includes('tools: Read, Bash, Write'), 'D-Critique should not have Write tool');
+});
+
+// --- T43: H-Review agent contains h-review-verdict.json ---
+test('h-review agent contains h-review-verdict.json', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'h-review.md');
+  assert.ok(fs.existsSync(agentPath), 'h-review.md missing');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.includes('h-review-verdict.json'), 'h-review.md should reference h-review-verdict.json');
+});
+
+// --- T44: J-Compile agent has Read, Bash tools only (no Write) ---
+test('j-compile agent has tools: Read, Bash (no Write)', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'j-compile.md');
+  assert.ok(fs.existsSync(agentPath), 'j-compile.md missing');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.includes('tools: Read, Bash'), 'Expected tools: Read, Bash in j-compile.md');
+  assert.ok(!content.includes('tools: Read, Bash, Write'), 'J-Compile should not have Write tool');
+});
+
+// --- T45: All agent templates contain model: inherit ---
+test('all agent templates contain model: inherit', () => {
+  const agents = ['d-critique', 'g-red', 'g-blue', 'h-review', 'j-compile'];
+  for (const agent of agents) {
+    const agentPath = path.join(__dirname, '..', '.claude', 'agents', `${agent}.md`);
+    const content = fs.readFileSync(agentPath, 'utf8');
+    assert.ok(content.includes('model: inherit'), `${agent}.md should contain model: inherit`);
+  }
+});
+
+// --- T46: No agent template has Write in its tools: line ---
+test('no agent template has Write in its tools: line', () => {
+  const agents = ['d-critique', 'g-red', 'g-blue', 'h-review', 'j-compile'];
+  for (const agent of agents) {
+    const agentPath = path.join(__dirname, '..', '.claude', 'agents', `${agent}.md`);
+    const content = fs.readFileSync(agentPath, 'utf8');
+    // Find the tools: line in frontmatter
+    const toolsMatch = content.match(/^tools:\s*(.+)$/m);
+    if (toolsMatch) {
+      assert.ok(!toolsMatch[1].includes('Write'), `${agent}.md tools: line should not include Write (got: ${toolsMatch[1]})`);
+    }
+  }
+});
+
+// --- T47: /detent:plan SKILL.md contains VALIDATION FAILED (output validation present) ---
+test('/detent:plan SKILL.md contains VALIDATION FAILED (output validation after each agent spawn)', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-plan', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('VALIDATION FAILED'), 'detent-plan SKILL.md should contain VALIDATION FAILED checks for truncated output detection');
+});
+
 // --- cleanup ---
 try {
   fs.rmSync(tmpDir, { recursive: true, force: true });
