@@ -394,16 +394,15 @@ test('setup creates .detent/playbooks/ directory', () => {
   assert.ok(fs.existsSync(path.join(dir, '.detent', 'playbooks')), '.detent/playbooks/ should exist after setup');
 });
 
-// --- T34: setup creates truth surface files with structural headers ---
-test('setup creates truth surface files with structural headers', () => {
+// --- T34: setup creates truth surface with single constraint-ledger.md ---
+test('setup creates constraint-ledger.md as the single truth surface file', () => {
   const dir = freshDir();
   run(`setup --dir "${dir}"`);
-  const frozenContent = fs.readFileSync(path.join(dir, '.detent', 'truth-surface', 'frozen-decisions.md'), 'utf8');
-  assert.ok(frozenContent.includes('# Frozen Decisions'), 'frozen-decisions.md should have "# Frozen Decisions" header');
   const constraintContent = fs.readFileSync(path.join(dir, '.detent', 'truth-surface', 'constraint-ledger.md'), 'utf8');
   assert.ok(constraintContent.includes('# Constraint Ledger'), 'constraint-ledger.md should have "# Constraint Ledger" header');
-  const domainContent = fs.readFileSync(path.join(dir, '.detent', 'truth-surface', 'domain-model.md'), 'utf8');
-  assert.ok(domainContent.includes('# Domain Model'), 'domain-model.md should have "# Domain Model" header');
+  // frozen-decisions.md and domain-model.md should NOT be created
+  assert.ok(!fs.existsSync(path.join(dir, '.detent', 'truth-surface', 'frozen-decisions.md')), 'frozen-decisions.md should not exist (merged into constraint-ledger)');
+  assert.ok(!fs.existsSync(path.join(dir, '.detent', 'truth-surface', 'domain-model.md')), 'domain-model.md should not exist (merged into constraint-ledger)');
 });
 
 // --- T35: truth-propose with --retained-goal and --discarded-options stores those fields (TRUTH-03) ---

@@ -20,7 +20,7 @@ Read these files before beginning:
 
 - `.detent/plan/g-red-output.md` — G-Red's attack points (your primary input)
 - `.detent/plan/d-critique-output.md` — D-Critique's original analysis
-- Use `node ./detent-tools.cjs truth-read --dir . --file frozen-decisions` to read the current truth surface
+- Use `node ./detent-tools.cjs truth-read --dir . --file constraint-ledger` to read the truth surface
 
 ## Your Task
 
@@ -39,19 +39,9 @@ Before writing your output file, run truth-update for each referenced entry:
 node ./detent-tools.cjs truth-read --dir . --file constraint-ledger
 # For each PROPOSED entry you defended or referenced:
 node ./detent-tools.cjs truth-update --dir . --id <ID> --file constraint-ledger --challenged-by g-blue
-# Also check frozen-decisions:
-node ./detent-tools.cjs truth-read --dir . --file frozen-decisions
-node ./detent-tools.cjs truth-update --dir . --id <ID> --file frozen-decisions --challenged-by g-blue
 ```
-
-Use the correct `--file` matching where the entry lives (constraint-ledger or frozen-decisions).
 
 To propose a new constraint entry:
-```bash
-node ./detent-tools.cjs truth-propose --dir . --id <ID> --file frozen-decisions --source-agent g-blue --rationale "<text>"
-```
-
-For constraint-ledger entries (include retained-goal and discarded-options per TRUTH-03):
 ```bash
 node ./detent-tools.cjs truth-propose --dir . --id <ID> --file constraint-ledger --source-agent g-blue --rationale "<text>" --retained-goal "<goal>" --discarded-options "<options>"
 ```

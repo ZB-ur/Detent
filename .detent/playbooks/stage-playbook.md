@@ -4,7 +4,7 @@ Quality standards for each stage of the Detent adversarial planning pipeline.
 
 ## General Principles
 
-- Every claim must be grounded in the truth surface (frozen decisions and constraint ledger)
+- Every claim must be grounded in the truth surface (constraint-ledger.md — FROZEN entries are immutable decisions)
 - Identify contradictions explicitly — do not paper over disagreements
 - Each stage produces a concrete artifact, not just analysis
 - Time-box your work: respect maxTurns and produce output before running out

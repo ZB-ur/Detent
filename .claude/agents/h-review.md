@@ -24,11 +24,11 @@ Read these files before beginning:
 - `.detent/plan/d-critique-output.md` — D-Critique's analysis
 - `.detent/plan/g-red-output.md` — G-Red's attacks
 - `.detent/plan/g-blue-output.md` — G-Blue's defenses
-- Use `node ./detent-tools.cjs truth-read --dir . --file frozen-decisions` to read current frozen decisions
+- Use `node ./detent-tools.cjs truth-read --dir . --file constraint-ledger` to read the truth surface (FROZEN entries are immutable decisions)
 
 ## Your Task
 
-1. Read all three planning outputs and the frozen decisions.
+1. Read all three planning outputs and the constraint ledger.
 2. Check: Does the proposed plan respect ALL frozen decisions? Any contradiction = rejection.
 3. Check: Are all BLOCKER-severity attacks from G-Red either rebutted with evidence or mitigated?
 4. Check: Would the handoff quality bar (from @.detent/playbooks/handoff-quality-bar.md) be achievable with the current plan?

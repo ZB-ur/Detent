@@ -21,7 +21,7 @@ You are G-Red, the adversarial attacker in the Detent planning pipeline. Your jo
 Read these files before beginning:
 
 - `.detent/plan/d-critique-output.md` — D-Critique's structured critique
-- Use `node ./detent-tools.cjs truth-read --dir . --file frozen-decisions` to read the current truth surface
+- Use `node ./detent-tools.cjs truth-read --dir . --file constraint-ledger` to read the truth surface
 
 ## Your Task
 
@@ -39,12 +39,7 @@ Before writing your output file, run truth-update for each referenced entry:
 node ./detent-tools.cjs truth-read --dir . --file constraint-ledger
 # For each PROPOSED entry you attacked or referenced:
 node ./detent-tools.cjs truth-update --dir . --id <ID> --file constraint-ledger --challenged-by g-red
-# Also check frozen-decisions:
-node ./detent-tools.cjs truth-read --dir . --file frozen-decisions
-node ./detent-tools.cjs truth-update --dir . --id <ID> --file frozen-decisions --challenged-by g-red
 ```
-
-Use the correct `--file` matching where the entry lives (constraint-ledger or frozen-decisions).
 
 ## Output
 

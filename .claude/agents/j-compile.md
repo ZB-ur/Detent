@@ -24,8 +24,7 @@ Read these files before beginning:
 - `.detent/plan/g-red-output.md` — G-Red's attacks
 - `.detent/plan/g-blue-output.md` — G-Blue's defenses
 - `.detent/plan/h-review-verdict.json` — H-Review's approval verdict
-- Use `node ./detent-tools.cjs truth-read --dir . --file frozen-decisions` to read frozen decisions
-- Use `node ./detent-tools.cjs truth-read --dir . --file domain-model` to read the domain model
+- Use `node ./detent-tools.cjs truth-read --dir . --file constraint-ledger` to read the truth surface (FROZEN entries are immutable constraints)
 
 ## Your Task
 

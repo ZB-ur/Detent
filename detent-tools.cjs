@@ -146,11 +146,9 @@ function cmdSetup(targetDir, named) {
   fs.mkdirSync(path.join(dDir, 'logs'), { recursive: true });
   fs.mkdirSync(path.join(dDir, 'playbooks'), { recursive: true });
 
-  // Initialize truth surface files with structural headers (idempotent — only write if missing)
+  // Initialize truth surface file (single source — constraint-ledger.md)
   const truthFiles = [
-    { name: 'frozen-decisions.md', header: '# Frozen Decisions\n\nDecisions frozen after adversarial challenge. FROZEN entries are immutable.\n' },
-    { name: 'constraint-ledger.md', header: '# Constraint Ledger\n\nRetained goals, discarded options, and rationale for each constraint.\n' },
-    { name: 'domain-model.md', header: '# Domain Model\n\nDomain concepts and constraints discovered during planning.\n' },
+    { name: 'constraint-ledger.md', header: '# Constraint Ledger\n\nAll constraints, decisions, and domain facts. PROPOSED entries are under debate; FROZEN entries are immutable.\n' },
   ];
   for (const tf of truthFiles) {
     const tfPath = path.join(dDir, 'truth-surface', tf.name);
