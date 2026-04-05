@@ -89,6 +89,7 @@ function cmdUsage() {
     '  state-write    Update fields in .detent/state.json (--field value pairs)',
     '  config-read    Print current .detent/config.json as JSON to stdout',
     '  config-write   Update fields in .detent/config.json (--field value pairs)',
+    '  spawn          Spawn a Claude Code subprocess with stream-json output',
     '',
     'Setup options:',
     '  --dir <path>        Target directory (default: cwd)',
@@ -96,6 +97,11 @@ function cmdUsage() {
     '  --budget <val>      Model budget: quality|balanced|budget (default: balanced)',
     '  --locale <val>      Locale/language (default: en)',
     '  --granularity <val> Unit granularity: fine|standard|coarse (default: standard)',
+    '',
+    'Spawn options:',
+    '  --dir <path>        Working directory for subprocess (default: cwd)',
+    '  --prompt <text>     Prompt to send to Claude Code (required)',
+    '  --target <binary>   Override binary for testing (default: claude)',
     '',
   ].join('\n'));
   process.exit(0);
@@ -138,6 +144,11 @@ function cmdSetup(targetDir, named) {
     },
     unit_granularity: named.granularity || 'standard',
     language: locale,
+    gates: {
+      plan: { enabled: true, description: 'Before coding - review discovery + plan' },
+      code: { enabled: true, description: 'After code generation - review before commit' },
+      deploy: { enabled: true, description: 'After verification - review before merge/deploy' },
+    },
   };
   writeJson(configPath(targetDir), config);
 
@@ -229,6 +240,53 @@ function cmdConfigWrite(targetDir, named) {
   writeJson(cPath, config);
 }
 
+function cmdSpawn(named) {
+  const { spawn } = require('child_process');
+  const prompt = named.prompt;
+  if (!prompt) {
+    process.stderr.write('Error: --prompt required for spawn command\n');
+    process.exit(1);
+  }
+  const targetDir = named.dir ? path.resolve(named.dir) : process.cwd();
+  const target = named.target || 'claude';
+  const spawnOptions = {
+    cwd: targetDir,
+    stdio: ['inherit', 'pipe', 'pipe'],
+    env: { ...process.env },
+  };
+  // Extensible isolation: additional layers (plugin dir, project-only settings) added here in Phase 3+
+  let args;
+  if (target === 'claude') {
+    args = ['-p', '--output-format', 'stream-json', '--dangerously-skip-permissions', prompt];
+  } else {
+    args = [prompt];
+  }
+  const child = spawn(target, args, spawnOptions);
+  let lineBuffer = '';
+  child.stdout.on('data', (chunk) => {
+    lineBuffer += chunk.toString('utf8');
+    let newlineIndex;
+    while ((newlineIndex = lineBuffer.indexOf('\n')) !== -1) {
+      const line = lineBuffer.slice(0, newlineIndex).trim();
+      lineBuffer = lineBuffer.slice(newlineIndex + 1);
+      if (line.length > 0) {
+        try {
+          const event = JSON.parse(line);
+          process.stdout.write(JSON.stringify(event) + '\n');
+        } catch (_) {
+          // Non-JSON line (startup messages) -- ignore
+        }
+      }
+    }
+  });
+  child.stderr.on('data', (chunk) => {
+    process.stderr.write(chunk);
+  });
+  child.on('exit', (code) => {
+    process.exit(code || 0);
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Main entry point
 // ---------------------------------------------------------------------------
@@ -257,6 +315,8 @@ function main() {
       return cmdConfigRead(targetDir);
     case 'config-write':
       return cmdConfigWrite(targetDir, named);
+    case 'spawn':
+      return cmdSpawn(named);
     default:
       process.stderr.write(`Unknown command: ${command}\n`);
       process.exit(1);

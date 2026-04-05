@@ -181,6 +181,59 @@ test('state-write updates multiple fields at once', () => {
   assert.strictEqual(state.iteration_count, 3, 'iteration_count should be 3 (parsed as int)');
 });
 
+// --- T13: setup includes gates in config.json ---
+test('setup creates config.json with gates field', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  const config = JSON.parse(fs.readFileSync(path.join(dir, '.detent', 'config.json'), 'utf8'));
+  assert.ok(config.gates, 'gates field should exist');
+  assert.strictEqual(config.gates.plan.enabled, true, 'plan gate should be enabled');
+  assert.strictEqual(config.gates.code.enabled, true, 'code gate should be enabled');
+  assert.strictEqual(config.gates.deploy.enabled, true, 'deploy gate should be enabled');
+});
+
+// --- T14: pipeline stage transition sequence ---
+test('state-write transitions through all 5 pipeline stages', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  const stages = ['discovery', 'planning', 'coding', 'verification', 'achieve'];
+  for (const stage of stages) {
+    run(`state-write --dir "${dir}" --pipeline_stage ${stage}`);
+    const state = JSON.parse(fs.readFileSync(path.join(dir, '.detent', 'state.json'), 'utf8'));
+    assert.strictEqual(state.pipeline_stage, stage, `pipeline_stage should be ${stage}`);
+  }
+});
+
+// --- T15: spawn without --prompt exits 1 ---
+test('spawn without --prompt exits 1 with error', () => {
+  const result = runAllowError('spawn');
+  assert.strictEqual(result.code, 1, `Expected exit 1, got ${result.code}`);
+  assert.ok(result.stderr.includes('Error'), `Expected "Error" in stderr, got: ${result.stderr}`);
+});
+
+// --- T16: spawn JSONL line-buffer parses and forwards events ---
+test('spawn command forwards JSONL events from mock target', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  // Create a mock script that outputs a JSONL line
+  const mockScript = path.join(dir, 'mock-agent.js');
+  fs.writeFileSync(mockScript, 'console.log(JSON.stringify({type:"result",text:"ok"}));\n');
+  const result = runAllowError(`spawn --dir "${dir}" --target node --prompt "${mockScript}"`);
+  assert.strictEqual(result.code, 0, `Expected exit 0, got ${result.code}`);
+  assert.ok(result.stdout.includes('"type"'), `Expected JSONL in stdout, got: ${result.stdout}`);
+  assert.ok(result.stdout.includes('"result"'), `Expected "result" type in stdout`);
+});
+
+// --- T17: spawn exits with child exit code ---
+test('spawn command exits with child exit code', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  const mockScript = path.join(dir, 'mock-exit.js');
+  fs.writeFileSync(mockScript, 'process.exit(0);\n');
+  const result = runAllowError(`spawn --dir "${dir}" --target node --prompt "${mockScript}"`);
+  assert.strictEqual(result.code, 0, `Expected exit 0, got ${result.code}`);
+});
+
 // --- cleanup ---
 try {
   fs.rmSync(tmpDir, { recursive: true, force: true });
