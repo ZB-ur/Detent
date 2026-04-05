@@ -21,7 +21,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-05)
 
 **Core value:** Constraint propagation through a truth surface that ensures every agent decision aligns with frozen requirements
-**Current focus:** Phase 03 — truth-surface-and-planning-agents
+**Current focus:** Phase 04 — coding-loop-and-recovery
 
 ## Current Position
 
@@ -86,6 +86,10 @@ Recent decisions affecting current work:
 - [Phase 03-truth-surface-and-planning-agents]: H-Review verdict is machine-parseable JSON with exactly three fields (verdict, reentry_stage, reason) — templated via Bash heredoc, parseable by skill with JSON.parse()
 - [Phase 03-truth-surface-and-planning-agents]: Father model pattern: /detent:plan reads only h-review-verdict.json for routing, never agent content
 - [Phase 03-truth-surface-and-planning-agents]: Output validation after each spawn catches truncated agent outputs before they corrupt downstream agents
+- [Phase 03-UAT]: spawn command requires --agent parameter to load Claude Code agent templates — without it, spawned sessions have no role identity
+- [Phase 03-UAT]: G-Red/G-Blue must call truth-update for every PROPOSED entry they reference — "optional" truth-update caused freeze gate to find zero mature entries
+- [Phase 03-UAT]: Truth surface merged to single constraint-ledger.md — frozen-decisions.md and domain-model.md removed; status field (PROPOSED/FROZEN) is sufficient, no need for file-level separation
+- [Phase 03-UAT]: G-Blue must truth-propose reformulated constraints — it has the fullest adversarial context; leaving reformulations in prose means no agent executes them
 
 ### Pending Todos
 
@@ -94,7 +98,7 @@ None yet.
 ### Blockers/Concerns
 
 - **M1 blocker (Phase 2):** 50K token re-injection per subprocess turn — subprocess spawner must apply 4-layer isolation before any pipeline work is meaningful. Must be validated against current Claude Code version at implementation time (bugs #771, #17248, #25670 have shifting status).
-- **Research flag (Phase 3):** Adversarial planning prompt contracts (D/G/H/J roles) are novel with limited precedent — consider `/gsd:research-phase` before finalizing Phase 3 agent template tasks.
+- ~~**Research flag (Phase 3):**~~ Resolved — adversarial planning agents implemented and UAT-validated. Key findings: agents must be mandated (not optional) to call truth-update, and G-Blue must truth-propose reformulations rather than leaving them in prose.
 - **Research flag (Phase 4):** Cross-stage rollback mechanism is novel — no mainstream framework implements contradiction-as-frozen-input. Design before implementing.
 
 ### Quick Tasks Completed

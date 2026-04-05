@@ -31,7 +31,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Truth Surface
 
-- [x] **TRUTH-01**: .detent/truth-surface/ directory stores constraint-ledger.md, frozen-decisions.md, and domain-model.md
+- [x] **TRUTH-01**: .detent/truth-surface/ directory stores constraint-ledger.md (single truth surface file for all constraints and decisions)
 - [x] **TRUTH-02**: Frozen decisions are immutable once committed; downstream agents check alignment before executing
 - [x] **TRUTH-03**: Constraint ledger tracks retained_goal, discarded options, and rationale for each frozen decision
 

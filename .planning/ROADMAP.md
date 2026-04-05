@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: State Infrastructure** - CLI tool, .detent/ schemas, and setup skill — the foundation everything else writes to
 - [x] **Phase 2: Pipeline Skeleton** - Five workflow skills and two-mode gate architecture — end-to-end pipeline that proves session bridging before agents exist (completed 2026-04-05)
-- [ ] **Phase 3: Truth Surface and Planning Agents** - Constraint ledger, frozen decisions, and adversarial planning agent templates (D/G/H/J)
+- [x] **Phase 3: Truth Surface and Planning Agents** - Constraint ledger, frozen decisions, and adversarial planning agent templates (D/G/H/J) (completed 2026-04-06)
 - [ ] **Phase 4: Coding Loop and Recovery** - Coder/Evaluator adversarial loop, cross-stage reentry, algedonic signal routing
 - [ ] **Phase 5: Observability** - Gemini CLI async behavior logging, raw JSONL capture, locale-aware outputs
 - [ ] **Phase 6: Web UI** - Pipeline configuration page and real-time runtime dashboard with multi-pipeline support
@@ -62,12 +62,12 @@ Plans:
 **Depends on**: Phase 2
 **Requirements**: TRUTH-01, TRUTH-02, TRUTH-03, PLAN-01, PLAN-02, PLAN-03, PLAN-04, PLAN-05
 **Success Criteria** (what must be TRUE):
-  1. .detent/truth-surface/ contains constraint-ledger.md, frozen-decisions.md, and domain-model.md with FROZEN/PROPOSED/SUPERSEDED sections; a decision marked FROZEN cannot be overwritten by any agent
+  1. .detent/truth-surface/ contains constraint-ledger.md (single truth surface file) with FROZEN/PROPOSED status; a decision marked FROZEN cannot be overwritten by any agent
   2. The D-Critique agent template, when invoked with a requirements set, produces a structured critique that attacks at least one requirement against the truth surface
   3. The G-Red agent template produces a genuine attack against D-Critique's output (not agreement); the G-Blue agent template produces a defense; both outputs are structured and actionable
   4. The H-Review agent template judges coding-readiness and emits either an approval or a rejection with an explicit reentry_stage field
   5. The J-Compile agent template produces an executable code handoff document that a Coder agent can act on without further clarification
-**Plans:** 1/3 plans executed
+**Plans:** 3/3 plans complete
 Plans:
 - [x] 03-01-PLAN.md — Truth surface CLI commands (truth-propose, truth-freeze, truth-read) + tests
 - [x] 03-02-PLAN.md — Five agent templates (D/G-Red/G-Blue/H/J) + three playbook files
@@ -117,7 +117,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|-----------|----------------|--------|-----------|
 | 1. State Infrastructure | M1 Engine | 2/2 | Complete |  |
 | 2. Pipeline Skeleton | M1 Engine | 2/2 | Complete   | 2026-04-05 |
-| 3. Truth Surface and Planning Agents | M2 Agents | 1/3 | In Progress|  |
+| 3. Truth Surface and Planning Agents | M2 Agents | 3/3 | Complete | 2026-04-06 |
 | 4. Coding Loop and Recovery | M2 Agents | 0/? | Not started | - |
 | 5. Observability | M2 Agents | 0/? | Not started | - |
 | 6. Web UI | M3 Web UI | 0/? | Not started | - |
