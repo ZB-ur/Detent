@@ -23,11 +23,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Planning Agents
 
-- [ ] **PLAN-01**: Stage D agent template: independent Critique that attacks false requirements against truth surface
-- [ ] **PLAN-02**: Stage G agent templates: Red (attack) and Blue (defend) adversarial pair for plan robustness
-- [ ] **PLAN-03**: Stage H agent template: Review agent that judges coding-readiness and can reject with reentry_stage
-- [ ] **PLAN-04**: Stage J agent template: Compile agent that generates executable code handoff from approved plan
-- [ ] **PLAN-05**: Playbook migration from ECL: stage-playbook, subagent-protocol, handoff-quality-bar adapted for Detent
+- [x] **PLAN-01**: Stage D agent template: independent Critique that attacks false requirements against truth surface
+- [x] **PLAN-02**: Stage G agent templates: Red (attack) and Blue (defend) adversarial pair for plan robustness
+- [x] **PLAN-03**: Stage H agent template: Review agent that judges coding-readiness and can reject with reentry_stage
+- [x] **PLAN-04**: Stage J agent template: Compile agent that generates executable code handoff from approved plan
+- [x] **PLAN-05**: Playbook migration from ECL: stage-playbook, subagent-protocol, handoff-quality-bar adapted for Detent
 
 ### Truth Surface
 
@@ -109,11 +109,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TRUTH-01 | Phase 3 | Pending |
 | TRUTH-02 | Phase 3 | Pending |
 | TRUTH-03 | Phase 3 | Pending |
-| PLAN-01 | Phase 3 | Pending |
-| PLAN-02 | Phase 3 | Pending |
-| PLAN-03 | Phase 3 | Pending |
-| PLAN-04 | Phase 3 | Pending |
-| PLAN-05 | Phase 3 | Pending |
+| PLAN-01 | Phase 3 | Complete |
+| PLAN-02 | Phase 3 | Complete |
+| PLAN-03 | Phase 3 | Complete |
+| PLAN-04 | Phase 3 | Complete |
+| PLAN-05 | Phase 3 | Complete |
 | CODE-01 | Phase 4 | Pending |
 | CODE-02 | Phase 4 | Pending |
 | CODE-03 | Phase 4 | Pending |

@@ -67,10 +67,10 @@ Plans:
   3. The G-Red agent template produces a genuine attack against D-Critique's output (not agreement); the G-Blue agent template produces a defense; both outputs are structured and actionable
   4. The H-Review agent template judges coding-readiness and emits either an approval or a rejection with an explicit reentry_stage field
   5. The J-Compile agent template produces an executable code handoff document that a Coder agent can act on without further clarification
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 Plans:
 - [ ] 03-01-PLAN.md — Truth surface CLI commands (truth-propose, truth-freeze, truth-read) + tests
-- [ ] 03-02-PLAN.md — Five agent templates (D/G-Red/G-Blue/H/J) + three playbook files
+- [x] 03-02-PLAN.md — Five agent templates (D/G-Red/G-Blue/H/J) + three playbook files
 - [ ] 03-03-PLAN.md — /detent:plan skill rewrite as sequential agent orchestrator + setup updates
 **UI hint**: no
 
@@ -117,7 +117,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|-----------|----------------|--------|-----------|
 | 1. State Infrastructure | M1 Engine | 2/2 | Complete |  |
 | 2. Pipeline Skeleton | M1 Engine | 2/2 | Complete   | 2026-04-05 |
-| 3. Truth Surface and Planning Agents | M2 Agents | 0/3 | Planning complete | - |
+| 3. Truth Surface and Planning Agents | M2 Agents | 1/3 | In Progress|  |
 | 4. Coding Loop and Recovery | M2 Agents | 0/? | Not started | - |
 | 5. Observability | M2 Agents | 0/? | Not started | - |
 | 6. Web UI | M3 Web UI | 0/? | Not started | - |
