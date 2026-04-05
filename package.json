@@ -1,0 +1,15 @@
+{
+  "name": "detent",
+  "version": "0.1.0",
+  "description": "Control-theory harness framework for multi-agent orchestration in Claude Code",
+  "type": "commonjs",
+  "main": "detent-tools.cjs",
+  "scripts": {
+    "test": "node test/run-tests.js"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "write-file-atomic": "^7.0.1"
+  }
+}
