@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-04-05T19:39:06.289Z"
+status: verifying
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-04-05T19:45:19.450Z"
 last_activity: 2026-04-05
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 9
-  completed_plans: 8
+  completed_plans: 9
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-05)
 
 Phase: 04 (coding-loop-and-recovery) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-05
 
 Progress: [░░░░░░░░░░] 0%
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03-truth-surface-and-planning-agents P02 | 6min | 2 tasks | 8 files |
 | Phase 03-truth-surface-and-planning-agents P03 | 3min | 2 tasks | 3 files |
 | Phase 04-coding-loop-and-recovery P01 | 3min | 2 tasks | 5 files |
+| Phase 04-coding-loop-and-recovery P02 | 5min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,9 @@ Recent decisions affecting current work:
 - [Phase 04-coding-loop-and-recovery]: total_units and current_unit in intFields with null support and NaN guard
 - [Phase 04-coding-loop-and-recovery]: truth-freeze --source code-contradiction bypasses challenged_by maturity check for empirical contradictions
 - [Phase 04-coding-loop-and-recovery]: Evaluator maxTurns 15 and explicit Algedonic Signal Detection section with machine-parseable algedonic field in verdict JSON
+- [Phase 04-coding-loop-and-recovery]: Verdict routing order: algedonic > reentry > PASS > FAIL -- algedonic must be checked before reentry to prevent misrouting frozen-constraint violations
+- [Phase 04-coding-loop-and-recovery]: State-write before git commit on PASS path -- crash-safe ordering ensures resume skips to next unit if crash happens mid-commit
+- [Phase 04-coding-loop-and-recovery]: iteration_count incremented BEFORE Coder spawn -- crash mid-spawn counts as an attempt, prevents infinite retry on broken agents
 
 ### Pending Todos
 
@@ -113,6 +117,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-05T19:39:06.286Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-04-05T19:45:19.447Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
