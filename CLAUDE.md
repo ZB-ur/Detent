@@ -105,11 +105,15 @@ Detent is a control-theory-based harness framework for multi-agent orchestration
 ### Testing
 
 - **Unit tests:** `node test/run-tests.js` — fast, no external deps, run after every code change
-- **E2E pipeline test:** `node test/run-e2e.js` — spawns real Claude Code sessions (~15-20 min)
-  - Run after any phase that touches: `detent-tools.cjs`, `.claude/agents/`, `.claude/skills/detent-*`, `.detent/playbooks/`
-  - Validates: agent output files exist, truth-update was called (challenged_by != null), freeze gate works, H-Review verdict is valid JSON, handoff.md has Implementation Units
+- **E2E pipeline test:** `node test/run-e2e.js` — staged, fixture-aware pipeline testing
+  - `--stage plan` — test plan pipeline only (spawn 5 agents, ~15-20 min)
+  - `--stage plan --save` — same + save artifacts as golden fixtures
+  - `--stage plan --fixtures` — validate using saved fixtures (no spawns, <1s)
+  - `--stage code --fixtures` — test code stage using plan fixtures (no re-plan)
+  - Run `--stage plan --save` after changing agent templates, skills, or CLI
+  - Run `--stage plan --fixtures` for quick validation after minor changes
   - If E2E fails, diagnose and fix before reporting phase complete — do not defer to user for manual testing
-  - `--skip-spawn` flag validates existing artifacts without spawning agents (useful for quick re-checks)
+  - Fixtures in `test/fixtures/` are committed to git as golden artifacts
 <!-- GSD:conventions-end -->
 
 <!-- GSD:architecture-start source:ARCHITECTURE.md -->
