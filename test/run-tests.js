@@ -234,6 +234,66 @@ test('spawn command exits with child exit code', () => {
   assert.strictEqual(result.code, 0, `Expected exit 0, got ${result.code}`);
 });
 
+// --- T18: all 5 pipeline skill files exist ---
+test('all 5 pipeline skill files exist', () => {
+  const skills = ['detent-discovery', 'detent-plan', 'detent-code', 'detent-verify', 'detent-achieve'];
+  for (const skill of skills) {
+    const skillPath = path.join(__dirname, '..', '.claude', 'skills', skill, 'SKILL.md');
+    assert.ok(fs.existsSync(skillPath), `${skill}/SKILL.md should exist at ${skillPath}`);
+  }
+});
+
+// --- T19: every skill @-references shared rules ---
+test('every pipeline skill references shared rules', () => {
+  const skills = ['detent-discovery', 'detent-plan', 'detent-code', 'detent-verify', 'detent-achieve'];
+  for (const skill of skills) {
+    const content = fs.readFileSync(path.join(__dirname, '..', '.claude', 'skills', skill, 'SKILL.md'), 'utf8');
+    assert.ok(content.includes('@.claude/skills/_shared/rules.md'), `${skill} should @-reference shared rules`);
+  }
+});
+
+// --- T20: every skill contains state-read and state-write ---
+test('every pipeline skill reads and writes state', () => {
+  const skills = ['detent-discovery', 'detent-plan', 'detent-code', 'detent-verify', 'detent-achieve'];
+  for (const skill of skills) {
+    const content = fs.readFileSync(path.join(__dirname, '..', '.claude', 'skills', skill, 'SKILL.md'), 'utf8');
+    assert.ok(content.includes('state-read'), `${skill} should contain state-read`);
+    assert.ok(content.includes('state-write'), `${skill} should contain state-write`);
+  }
+});
+
+// --- T21: only plan/code/achieve skills contain gate checks ---
+test('only plan/code/achieve skills contain gate checks', () => {
+  const gated = ['detent-plan', 'detent-code', 'detent-achieve'];
+  const ungated = ['detent-discovery', 'detent-verify'];
+  for (const skill of gated) {
+    const content = fs.readFileSync(path.join(__dirname, '..', '.claude', 'skills', skill, 'SKILL.md'), 'utf8');
+    assert.ok(content.includes('Gate Check') || content.includes('gate'), `${skill} should contain gate check`);
+  }
+  for (const skill of ungated) {
+    const content = fs.readFileSync(path.join(__dirname, '..', '.claude', 'skills', skill, 'SKILL.md'), 'utf8');
+    assert.ok(!content.includes('Gate Check'), `${skill} should NOT contain Gate Check section`);
+  }
+});
+
+// --- T22: every skill frontmatter includes AskUserQuestion ---
+test('every pipeline skill allows AskUserQuestion tool', () => {
+  const skills = ['detent-discovery', 'detent-plan', 'detent-code', 'detent-verify', 'detent-achieve'];
+  for (const skill of skills) {
+    const content = fs.readFileSync(path.join(__dirname, '..', '.claude', 'skills', skill, 'SKILL.md'), 'utf8');
+    assert.ok(content.includes('AskUserQuestion'), `${skill} should include AskUserQuestion in allowed-tools`);
+  }
+});
+
+// --- T23: every skill contains stage-mismatch entry guard ---
+test('every pipeline skill contains stage-mismatch entry guard', () => {
+  const skills = ['detent-discovery', 'detent-plan', 'detent-code', 'detent-verify', 'detent-achieve'];
+  for (const skill of skills) {
+    const content = fs.readFileSync(path.join(__dirname, '..', '.claude', 'skills', skill, 'SKILL.md'), 'utf8');
+    assert.ok(content.includes('expects'), `${skill} should contain stage-mismatch error pattern with "expects" keyword`);
+  }
+});
+
 // --- cleanup ---
 try {
   fs.rmSync(tmpDir, { recursive: true, force: true });
