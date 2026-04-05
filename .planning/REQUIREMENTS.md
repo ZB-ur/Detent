@@ -12,7 +12,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **ENG-01**: detent-tools.cjs CLI tool handles all state mutations via single entry point (state read/write, truth surface update, reentry request, config management)
 - [x] **ENG-02**: .detent/state.json persists session position (current stage, current unit, iteration count) and survives /clear boundaries
 - [x] **ENG-03**: .detent/config.json stores mode (autonomous/supervised), model budget (quality/balanced/budget), locale (zh-CN/en), pipeline stage toggles, unit granularity, and language preference
-- [ ] **ENG-04**: /detent:setup skill initializes .detent/ directory structure, walks user through config questions, and persists config to target repo
+- [x] **ENG-04**: /detent:setup skill initializes .detent/ directory structure, walks user through config questions, and persists config to target repo
 
 ### Pipeline
 
@@ -101,7 +101,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ENG-01 | Phase 1 | Complete |
 | ENG-02 | Phase 1 | Complete |
 | ENG-03 | Phase 1 | Complete |
-| ENG-04 | Phase 1 | Pending |
+| ENG-04 | Phase 1 | Complete |
 | PIPE-01 | Phase 2 | Pending |
 | PIPE-02 | Phase 2 | Pending |
 | PIPE-03 | Phase 2 | Pending |

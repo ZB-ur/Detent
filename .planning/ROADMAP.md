@@ -40,7 +40,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 1/2 plans executed
 Plans:
 - [x] 01-01-PLAN.md — detent-tools.cjs CLI with all commands, package.json, test suite
-- [ ] 01-02-PLAN.md — /detent:setup skill with interactive config wizard
+- [x] 01-02-PLAN.md — /detent:setup skill with interactive config wizard
 
 ### Phase 2: Pipeline Skeleton
 **Goal**: All five workflow skills exist and the end-to-end pipeline runs — discovery through achieve — with two-mode gate behavior and session continuity, before any production agent templates are added
