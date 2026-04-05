@@ -527,6 +527,42 @@ test('/detent:plan SKILL.md contains VALIDATION FAILED (output validation after 
   assert.ok(content.includes('VALIDATION FAILED'), 'detent-plan SKILL.md should contain VALIDATION FAILED checks for truncated output detection');
 });
 
+// --- T48: spawn command includes --verbose flag for stream-json ---
+test('spawn command includes --verbose flag in claude args', () => {
+  const cliPath = path.join(__dirname, '..', 'detent-tools.cjs');
+  const content = fs.readFileSync(cliPath, 'utf8');
+  assert.ok(content.includes("'--verbose'"), 'detent-tools.cjs spawn should include --verbose flag');
+});
+
+// --- T49: spawn command supports --agent parameter ---
+test('spawn command supports --agent parameter', () => {
+  const cliPath = path.join(__dirname, '..', 'detent-tools.cjs');
+  const content = fs.readFileSync(cliPath, 'utf8');
+  assert.ok(content.includes("named.agent"), 'detent-tools.cjs spawn should read named.agent');
+  assert.ok(content.includes("'--agent'"), 'detent-tools.cjs spawn should pass --agent to claude');
+});
+
+// --- T50: SKILL.md spawn calls use --agent parameter ---
+test('/detent:plan SKILL.md spawn calls use --agent parameter for agent template loading', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-plan', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  const agents = ['d-critique', 'g-red', 'g-blue', 'h-review', 'j-compile'];
+  for (const agent of agents) {
+    assert.ok(content.includes(`--agent ${agent}`), `SKILL.md should use --agent ${agent} in spawn call`);
+  }
+});
+
+// --- T51: SKILL.md spawn calls do NOT contain "Run as the" (agent template handles identity) ---
+test('/detent:plan SKILL.md spawn prompts do not contain redundant "Run as the" identity', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-plan', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  // With --agent flag, the agent template defines identity — prompt should not duplicate it
+  const spawnLines = content.split('\n').filter(l => l.includes('detent-tools.cjs spawn'));
+  for (const line of spawnLines) {
+    assert.ok(!line.includes('Run as the'), `Spawn prompt should not contain "Run as the" when using --agent: ${line.slice(0, 80)}`);
+  }
+});
+
 // --- cleanup ---
 try {
   fs.rmSync(tmpDir, { recursive: true, force: true });

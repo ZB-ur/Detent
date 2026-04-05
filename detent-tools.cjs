@@ -89,7 +89,7 @@ function cmdUsage() {
     '  state-write    Update fields in .detent/state.json (--field value pairs)',
     '  config-read    Print current .detent/config.json as JSON to stdout',
     '  config-write   Update fields in .detent/config.json (--field value pairs)',
-    '  spawn          Spawn a Claude Code subprocess with stream-json output',
+    '  spawn          Spawn a Claude Code subprocess with stream-json output (--agent <name> to load agent template)',
     '  truth-propose  Propose a new entry to a truth surface file',
     '  truth-freeze   Freeze a mature truth surface entry (makes it immutable)',
     '  truth-read     Output the contents of a truth surface file to stdout',
@@ -521,9 +521,14 @@ function cmdSpawn(named) {
     env: { ...process.env },
   };
   // Extensible isolation: additional layers (plugin dir, project-only settings) added here in Phase 3+
+  const agent = named.agent || null;
   let args;
   if (target === 'claude') {
-    args = ['-p', '--output-format', 'stream-json', '--dangerously-skip-permissions', prompt];
+    args = ['-p', '--output-format', 'stream-json', '--verbose', '--dangerously-skip-permissions'];
+    if (agent) {
+      args.push('--agent', agent);
+    }
+    args.push(prompt);
   } else {
     args = [prompt];
   }

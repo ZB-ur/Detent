@@ -88,7 +88,7 @@ Spawn D-Critique. On retry iterations, append the reentry instruction to the pro
 
 - First pass (iteration 0):
 ```bash
-node ./detent-tools.cjs spawn --dir . --prompt "Run as the d-critique subagent. Read @.detent/truth-surface/frozen-decisions.md @.detent/truth-surface/constraint-ledger.md @.detent/truth-surface/domain-model.md and produce your critique."
+node ./detent-tools.cjs spawn --dir . --agent d-critique --prompt "Read @.detent/truth-surface/frozen-decisions.md @.detent/truth-surface/constraint-ledger.md @.detent/truth-surface/domain-model.md and produce your critique."
 ```
 
 - Retry pass (iteration N > 0), append to the prompt: ` This is retry iteration <N>. Use -R<N> suffix for any new truth-propose IDs to avoid collision with prior iteration entries.`
@@ -132,7 +132,7 @@ Spawn G-Red. On retry iterations, append the reentry suffix instruction:
 
 - First pass (iteration 0):
 ```bash
-node ./detent-tools.cjs spawn --dir . --prompt "Run as the g-red subagent. Read @.detent/plan/d-critique-output.md @.detent/truth-surface/frozen-decisions.md and produce your attack."
+node ./detent-tools.cjs spawn --dir . --agent g-red --prompt "Read @.detent/plan/d-critique-output.md @.detent/truth-surface/frozen-decisions.md and produce your attack."
 ```
 
 - Retry pass (iteration N > 0): append ` This is retry iteration <N>. Use -R<N> suffix for any new truth-propose IDs.`
@@ -172,7 +172,7 @@ Spawn G-Blue. On retry iterations, append the reentry suffix instruction:
 
 - First pass (iteration 0):
 ```bash
-node ./detent-tools.cjs spawn --dir . --prompt "Run as the g-blue subagent. Read @.detent/plan/g-red-output.md @.detent/plan/d-critique-output.md @.detent/truth-surface/frozen-decisions.md and produce your defense."
+node ./detent-tools.cjs spawn --dir . --agent g-blue --prompt "Read @.detent/plan/g-red-output.md @.detent/plan/d-critique-output.md @.detent/truth-surface/frozen-decisions.md and produce your defense."
 ```
 
 - Retry pass (iteration N > 0): append ` This is retry iteration <N>. Use -R<N> suffix for any new truth-propose IDs.`
@@ -259,7 +259,7 @@ echo "[detent:plan] Stage 4/5: Dispatching H-Review..."
 Spawn H-Review:
 
 ```bash
-node ./detent-tools.cjs spawn --dir . --prompt "Run as the h-review subagent. Read @.detent/plan/d-critique-output.md @.detent/plan/g-red-output.md @.detent/plan/g-blue-output.md @.detent/truth-surface/frozen-decisions.md and produce your verdict."
+node ./detent-tools.cjs spawn --dir . --agent h-review --prompt "Read @.detent/plan/d-critique-output.md @.detent/plan/g-red-output.md @.detent/plan/g-blue-output.md @.detent/truth-surface/frozen-decisions.md and produce your verdict."
 ```
 
 If spawn exits non-zero:
@@ -368,7 +368,7 @@ echo "[detent:plan] Stage 5/5: Dispatching J-Compile..."
 Spawn J-Compile:
 
 ```bash
-node ./detent-tools.cjs spawn --dir . --prompt "Run as the j-compile subagent. Read @.detent/plan/d-critique-output.md @.detent/plan/g-red-output.md @.detent/plan/g-blue-output.md @.detent/plan/h-review-verdict.json @.detent/truth-surface/frozen-decisions.md @.detent/truth-surface/domain-model.md and produce the code handoff."
+node ./detent-tools.cjs spawn --dir . --agent j-compile --prompt "Read @.detent/plan/d-critique-output.md @.detent/plan/g-red-output.md @.detent/plan/g-blue-output.md @.detent/plan/h-review-verdict.json @.detent/truth-surface/frozen-decisions.md @.detent/truth-surface/domain-model.md and produce the code handoff."
 ```
 
 If spawn exits non-zero:
