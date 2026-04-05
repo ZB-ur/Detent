@@ -121,6 +121,7 @@ function cmdUsage() {
     '  --dir <path>    Target directory (default: cwd)',
     '  --id <id>       Entry ID to freeze (required)',
     '  --file <name>   Truth surface file name without .md extension (required)',
+    '  --source <val>        Bypass maturity check when "code-contradiction" (empirical code contradiction)',
     '',
     'truth-read options:',
     '  --dir <path>    Target directory (default: cwd)',
@@ -216,12 +217,21 @@ function cmdStateWrite(targetDir, named) {
   }
 
   // Merge named args (excluding --dir) into state
-  const intFields = new Set(['iteration_count', 'reentry_depth']);
-  const nullFields = new Set(['current_unit', 'session_id']);
+  const intFields = new Set(['iteration_count', 'reentry_depth', 'current_unit', 'total_units']);
+  const nullFields = new Set(['session_id']);
   for (const [key, value] of Object.entries(named)) {
     if (key === 'dir') continue;
     if (intFields.has(key)) {
-      state[key] = parseInt(value, 10);
+      if (value === 'null') {
+        state[key] = null;
+      } else {
+        const parsed = parseInt(value, 10);
+        if (isNaN(parsed)) {
+          process.stderr.write(`Error: Invalid integer value "${value}" for field "${key}"\n`);
+          process.exit(1);
+        }
+        state[key] = parsed;
+      }
     } else if (nullFields.has(key) && value === 'null') {
       state[key] = null;
     } else {
@@ -396,11 +406,14 @@ function cmdTruthFreeze(targetDir, named) {
     process.exit(1);
   }
 
-  // Check maturity — challenged_by must not be null
-  const challengedByMatch = entrySection.match(/challenged_by:\s*(\S+)/);
-  if (!challengedByMatch || challengedByMatch[1] === 'null') {
-    process.stderr.write(`Error: Entry ${id} is not mature (missing challenged_by). Cannot freeze.\n`);
-    process.exit(1);
+  // Check maturity — challenged_by must not be null (bypass allowed for code-contradiction)
+  const bypassMaturity = named.source === 'code-contradiction';
+  if (!bypassMaturity) {
+    const challengedByMatch = entrySection.match(/challenged_by:\s*(\S+)/);
+    if (!challengedByMatch || challengedByMatch[1] === 'null') {
+      process.stderr.write(`Error: Entry ${id} is not mature (missing challenged_by). Cannot freeze.\n`);
+      process.exit(1);
+    }
   }
 
   // Replace status and frozen_at within this entry's section
