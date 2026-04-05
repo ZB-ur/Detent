@@ -12,18 +12,17 @@ Constraint propagation through a truth surface that ensures every agent decision
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] CLI tool (detent-tools.cjs) as single point for all state mutations — Validated in Phase 1-2
+- [x] Truth surface persistence (.detent/truth-surface/) with constraint ledger and frozen decisions — Validated in Phase 3
+- [x] State management (.detent/state.json) with session continuity across /clear boundaries — Validated in Phase 1
+- [x] Config system (.detent/config.json) with mode and pipeline toggles — Validated in Phase 1
+- [x] Agent prompt templates for Planning stages (D-Critique, G-Red/Blue, H-Review, J-Compile) — Validated in Phase 3
+- [x] Playbook migration from ECL (stage-playbook, subagent-protocol, handoff-quality-bar) — Validated in Phase 3
 
 ### Active
 
-- [ ] CLI tool (harness-tools.cjs) as single point for all state mutations
-- [ ] 5 workflow skills: /harness:setup, /harness:discovery, /harness:plan, /harness:code, /harness:verify, /harness:achieve
-- [ ] Truth surface persistence (.harness/truth-surface/) with constraint ledger and frozen decisions
-- [ ] State management (.harness/state.json) with session continuity across /clear boundaries
-- [ ] Config system (.harness/config.json) with mode (autonomous/supervised), model budget, locale, pipeline toggles
-- [ ] Agent prompt templates for Planning stages (D-Critique, G-Red/Blue, H-Review, J-Compile)
+- [ ] 5 workflow skills: /detent:setup, /detent:discovery, /detent:plan, /detent:code, /detent:verify, /detent:achieve
 - [ ] Agent prompt templates for Coding stage (Coder, Evaluator)
-- [ ] Playbook migration from ECL (stage-playbook, subagent-protocol, handoff-quality-bar)
 - [ ] Async behavior logging via Gemini CLI hook (zero intrusion on core agent prompts)
 - [ ] Coding-Evaluator iteration loop with max iteration limit
 - [ ] Reentry mechanism for cross-stage rollback when planning-level contradictions surface during coding
@@ -86,4 +85,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-05 after initialization*
+*Last updated: 2026-04-05 after Phase 3 completion — truth surface CLI, agent templates, and planning orchestrator all verified*
