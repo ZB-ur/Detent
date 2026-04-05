@@ -16,10 +16,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Pipeline
 
-- [ ] **PIPE-01**: 5-stage sequential pipeline: Discovery → Planning (A-J) → Coding (unit × eval) → Verification → Achieve
+- [x] **PIPE-01**: 5-stage sequential pipeline: Discovery → Planning (A-J) → Coding (unit × eval) → Verification → Achieve
 - [ ] **PIPE-02**: One workflow skill per stage: /detent:discovery, /detent:plan, /detent:code, /detent:verify, /detent:achieve
-- [ ] **PIPE-03**: Two-mode operation: autonomous mode auto-approves all gates; supervised mode pauses at key gates for human confirmation
-- [ ] **PIPE-04**: Each skill reads .detent/state.json at start and updates it on completion, enabling cross-session continuity
+- [x] **PIPE-03**: Two-mode operation: autonomous mode auto-approves all gates; supervised mode pauses at key gates for human confirmation
+- [x] **PIPE-04**: Each skill reads .detent/state.json at start and updates it on completion, enabling cross-session continuity
 
 ### Planning Agents
 
@@ -102,10 +102,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ENG-02 | Phase 1 | Complete |
 | ENG-03 | Phase 1 | Complete |
 | ENG-04 | Phase 1 | Complete |
-| PIPE-01 | Phase 2 | Pending |
+| PIPE-01 | Phase 2 | Complete |
 | PIPE-02 | Phase 2 | Pending |
-| PIPE-03 | Phase 2 | Pending |
-| PIPE-04 | Phase 2 | Pending |
+| PIPE-03 | Phase 2 | Complete |
+| PIPE-04 | Phase 2 | Complete |
 | TRUTH-01 | Phase 3 | Pending |
 | TRUTH-02 | Phase 3 | Pending |
 | TRUTH-03 | Phase 3 | Pending |

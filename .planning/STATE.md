@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: "Completed 01-state-infrastructure plan 02 (/detent:setup skill)"
-last_updated: "2026-04-05T03:14:39.373Z"
+status: executing
+stopped_at: Completed 02-pipeline-skeleton plan 01 (spawn command + gates config + shared rules)
+last_updated: "2026-04-05T12:57:08.585Z"
 last_activity: 2026-04-05
 progress:
   total_phases: 6
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 4
+  completed_plans: 3
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-05)
 
 **Core value:** Constraint propagation through a truth surface that ensures every agent decision aligns with frozen requirements
-**Current focus:** Phase 01 — state-infrastructure
+**Current focus:** Phase 02 — pipeline-skeleton
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 02 (pipeline-skeleton) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-04-05
 
 Progress: [░░░░░░░░░░] 0%
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 01-state-infrastructure P01 | 2min | 2 tasks | 4 files |
 | Phase 01-state-infrastructure P02 | 7min | 2 tasks | 1 files |
+| Phase 02-pipeline-skeleton P01 | 9min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,10 @@ Recent decisions affecting current work:
 - [Phase 01-state-infrastructure]: parseArgs helper inlined (30 lines) — no minimist/yargs dependency; detent-tools.cjs has exactly one external dep (write-file-atomic)
 - [Phase 01-state-infrastructure]: Write excluded from skill allowed-tools — enforces single-mutation-point invariant at Claude Code tool permission level
 - [Phase 01-state-infrastructure]: node ./detent-tools.cjs relative path in skill — avoids hardcoded absolute paths that break on other machines
+- [Phase 02-pipeline-skeleton]: cmdSpawn uses stdio=['inherit','pipe','pipe'] per CLAUDE.md Claude Code spawn workaround (issue #771)
+- [Phase 02-pipeline-skeleton]: gates defaults all enabled (plan/code/deploy) for safe supervised mode out of the box
+- [Phase 02-pipeline-skeleton]: spawn --target flag allows binary override for testing without requiring live Claude CLI
+- [Phase 02-pipeline-skeleton]: shared rules.md @-referenced by all pipeline skills to enforce single-mutation-point invariant
 
 ### Pending Todos
 
@@ -84,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-05T03:11:21.738Z
-Stopped at: Completed 01-state-infrastructure plan 02 (/detent:setup skill)
+Last session: 2026-04-05T12:57:08.582Z
+Stopped at: Completed 02-pipeline-skeleton plan 01 (spawn command + gates config + shared rules)
 Resume file: None

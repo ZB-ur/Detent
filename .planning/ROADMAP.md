@@ -54,7 +54,7 @@ Plans:
   5. The subprocess spawner applies scoped working directory isolation with an extensible interface for adding further isolation layers (additional layers deferred to Phase 3+) — confirmed by running a pipeline and observing no 50K token re-injection overhead
 **Plans:** 2 plans
 Plans:
-- [ ] 02-01-PLAN.md — spawn command, gates config, shared rules, infrastructure tests
+- [x] 02-01-PLAN.md — spawn command, gates config, shared rules, infrastructure tests
 - [ ] 02-02-PLAN.md — five pipeline workflow skills with gate checks and structure tests
 
 ### Phase 3: Truth Surface and Planning Agents
