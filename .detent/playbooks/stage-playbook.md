@@ -37,3 +37,13 @@ Quality standards for each stage of the Detent adversarial planning pipeline.
 - Every implementation unit must have: files to create/modify, acceptance criteria, applicable frozen constraints
 - Ambiguity is a defect. If you are unsure, state the assumption explicitly.
 - Order units by dependency — unit N should not depend on unit N+1
+
+## Stage C: Coding
+
+- Coder executes exactly one unit at a time -- do not combine or skip units
+- Every file created or modified must be logged in coder-manifest.json
+- NEVER write to .detent/ files via the Write tool -- use detent-tools.cjs CLI only
+- Evaluator runs the actual test suite -- not code review, not static analysis
+- If a frozen constraint is violated, the Evaluator MUST set algedonic: true in the verdict JSON -- do not describe it only in prose
+- Reentry is for planning-level contradictions only (handoff is wrong), NOT for coding bugs (those are FAIL + retry)
+- Evaluator verdict JSON must ALWAYS include algedonic and reentry_requested fields (default false) -- never omit them

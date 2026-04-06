@@ -562,6 +562,266 @@ test('/detent:plan SKILL.md spawn prompts do not contain redundant "Run as the" 
   }
 });
 
+// --- T52: coder agent template exists ---
+test('coder agent template exists', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'coder.md');
+  assert.ok(fs.existsSync(agentPath), 'coder.md missing from .claude/agents/');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.length > 0, 'coder.md should be non-empty');
+});
+
+// --- T53: coder agent has tools: Read, Bash, Write ---
+test('coder agent has tools: Read, Bash, Write', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'coder.md');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.includes('tools: Read, Bash, Write'), 'coder.md should contain tools: Read, Bash, Write');
+});
+
+// --- T54: coder agent contains handoff.md reference ---
+test('coder agent contains handoff.md reference', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'coder.md');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.includes('handoff.md'), 'coder.md should contain handoff.md reference');
+});
+
+// --- T55: coder agent contains .detent/ Write restriction ---
+test('coder agent contains .detent/ Write restriction', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'coder.md');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.includes('NEVER use the Write tool on any file inside'), 'coder.md should contain .detent/ Write restriction');
+});
+
+// --- T56: coder agent writes coder-manifest.json via Bash heredoc ---
+test('coder agent writes coder-manifest.json via Bash heredoc', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'coder.md');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.includes('coder-manifest.json'), 'coder.md should reference coder-manifest.json');
+  assert.ok(content.includes('cat >'), 'coder.md should use cat > (Bash heredoc) to write coder-manifest.json');
+});
+
+// --- T57: evaluator agent template exists ---
+test('evaluator agent template exists', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'evaluator.md');
+  assert.ok(fs.existsSync(agentPath), 'evaluator.md missing from .claude/agents/');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.length > 0, 'evaluator.md should be non-empty');
+});
+
+// --- T58: evaluator agent has tools: Read, Bash (no Write) ---
+test('evaluator agent has tools: Read, Bash (no Write)', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'evaluator.md');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.includes('tools: Read, Bash'), 'evaluator.md should contain tools: Read, Bash');
+  assert.ok(!content.match(/tools:.*Write/), 'evaluator.md tools: line should NOT include Write');
+});
+
+// --- T59: evaluator agent contains evaluator-verdict.json reference ---
+test('evaluator agent contains evaluator-verdict.json reference', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'evaluator.md');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.includes('evaluator-verdict.json'), 'evaluator.md should reference evaluator-verdict.json');
+});
+
+// --- T60: evaluator agent contains explicit algedonic detection section ---
+test('evaluator agent contains explicit algedonic detection section', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'evaluator.md');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.includes('Algedonic Signal Detection'), 'evaluator.md should contain "Algedonic Signal Detection" section');
+  assert.ok(content.includes('algedonic: true'), 'evaluator.md should contain algedonic: true instruction');
+});
+
+// --- T61: evaluator agent contains reentry_requested field documentation ---
+test('evaluator agent contains reentry_requested field documentation', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'evaluator.md');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  assert.ok(content.includes('reentry_requested'), 'evaluator.md should contain reentry_requested documentation');
+});
+
+// --- T62: evaluator agent maxTurns is at least 15 ---
+test('evaluator agent maxTurns is at least 15', () => {
+  const agentPath = path.join(__dirname, '..', '.claude', 'agents', 'evaluator.md');
+  const content = fs.readFileSync(agentPath, 'utf8');
+  const maxTurnsMatch = content.match(/maxTurns:\s*(\d+)/);
+  assert.ok(maxTurnsMatch, 'evaluator.md should contain maxTurns in frontmatter');
+  assert.ok(parseInt(maxTurnsMatch[1], 10) >= 15, `evaluator.md maxTurns should be >= 15, got ${maxTurnsMatch[1]}`);
+});
+
+// --- T63: state-write accepts total_units as integer ---
+test('state-write accepts total_units as integer', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`state-write --dir "${dir}" --total_units 5`);
+  const state = JSON.parse(fs.readFileSync(path.join(dir, '.detent', 'state.json'), 'utf8'));
+  assert.strictEqual(state.total_units, 5, `total_units should be integer 5, got ${JSON.stringify(state.total_units)}`);
+  assert.strictEqual(typeof state.total_units, 'number', `total_units should be type number, got ${typeof state.total_units}`);
+});
+
+// --- T64: state-write accepts current_unit as integer (not only null) ---
+test('state-write accepts current_unit as integer (not only null)', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`state-write --dir "${dir}" --current_unit 0`);
+  const state = JSON.parse(fs.readFileSync(path.join(dir, '.detent', 'state.json'), 'utf8'));
+  assert.strictEqual(state.current_unit, 0, `current_unit should be integer 0, got ${JSON.stringify(state.current_unit)}`);
+  assert.strictEqual(typeof state.current_unit, 'number', `current_unit should be type number, got ${typeof state.current_unit}`);
+});
+
+// --- T65: state-write accepts current_unit null ---
+test('state-write accepts current_unit null', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`state-write --dir "${dir}" --current_unit 3`);
+  run(`state-write --dir "${dir}" --current_unit null`);
+  const state = JSON.parse(fs.readFileSync(path.join(dir, '.detent', 'state.json'), 'utf8'));
+  assert.strictEqual(state.current_unit, null, `current_unit should be null after reset, got ${JSON.stringify(state.current_unit)}`);
+});
+
+// --- T66: state-write rejects NaN integer values ---
+test('state-write rejects NaN integer values', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  const result = runAllowError(`state-write --dir "${dir}" --total_units abc`);
+  assert.strictEqual(result.code, 1, `Expected exit 1 for NaN value, got ${result.code}`);
+  assert.ok(result.stderr.includes('Invalid integer value'), `Expected "Invalid integer value" in stderr, got: ${result.stderr}`);
+});
+
+// --- T67: truth-freeze --source code-contradiction bypasses maturity check ---
+test('truth-freeze --source code-contradiction bypasses maturity check', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`truth-propose --dir "${dir}" --id TEST-BYPASS --file constraint-ledger --source-agent test --rationale "test" --retained-goal "test"`);
+  const result = runAllowError(`truth-freeze --dir "${dir}" --id TEST-BYPASS --file constraint-ledger --source code-contradiction`);
+  assert.strictEqual(result.code, 0, `Expected exit 0 with --source code-contradiction bypass, got ${result.code}. stderr: ${result.stderr}`);
+});
+
+// --- T68: truth-freeze without --source still requires maturity ---
+test('truth-freeze without --source still requires maturity', () => {
+  const dir = freshDir();
+  run(`setup --dir "${dir}"`);
+  run(`truth-propose --dir "${dir}" --id TEST-MATURITY --file constraint-ledger --source-agent test --rationale "test" --retained-goal "test"`);
+  const result = runAllowError(`truth-freeze --dir "${dir}" --id TEST-MATURITY --file constraint-ledger`);
+  assert.strictEqual(result.code, 1, `Expected exit 1 without --source bypass, got ${result.code}`);
+  assert.ok(result.stderr.includes('not mature') || result.stderr.includes('challenged_by'), `Expected maturity error in stderr, got: ${result.stderr}`);
+});
+
+// --- T69: stage-playbook.md contains Coding stage section ---
+test('stage-playbook.md contains Coding stage section', () => {
+  const playbookPath = path.join(__dirname, '..', '.detent', 'playbooks', 'stage-playbook.md');
+  assert.ok(fs.existsSync(playbookPath), 'stage-playbook.md missing');
+  const content = fs.readFileSync(playbookPath, 'utf8');
+  assert.ok(content.includes('## Stage C: Coding'), 'stage-playbook.md should contain ## Stage C: Coding section');
+});
+
+// --- T70: /detent:code SKILL.md contains spawn --agent coder ---
+test('/detent:code SKILL.md contains spawn --agent coder', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  assert.ok(fs.existsSync(skillPath), 'detent-code/SKILL.md missing');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('spawn --dir . --agent coder'), 'detent-code SKILL.md should contain spawn --dir . --agent coder');
+});
+
+// --- T71: /detent:code SKILL.md contains spawn --agent evaluator ---
+test('/detent:code SKILL.md contains spawn --agent evaluator', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('spawn --dir . --agent evaluator'), 'detent-code SKILL.md should contain spawn --dir . --agent evaluator');
+});
+
+// --- T72: /detent:code SKILL.md contains evaluator-verdict.json routing ---
+test('/detent:code SKILL.md contains evaluator-verdict.json routing', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('evaluator-verdict.json'), 'detent-code SKILL.md should reference evaluator-verdict.json for routing');
+});
+
+// --- T73: /detent:code SKILL.md contains algedonic check before reentry ---
+test('/detent:code SKILL.md contains algedonic check before reentry', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  const algIdx = content.indexOf('algedonic');
+  const reentryIdx = content.indexOf('reentry_requested');
+  assert.ok(algIdx !== -1, 'SKILL.md should contain algedonic');
+  assert.ok(reentryIdx !== -1, 'SKILL.md should contain reentry_requested');
+  assert.ok(algIdx < reentryIdx, `algedonic (index ${algIdx}) should appear before reentry_requested (index ${reentryIdx}) per D-15`);
+});
+
+// --- T74: /detent:code SKILL.md contains truth-freeze --source code-contradiction for reentry ---
+test('/detent:code SKILL.md contains truth-freeze --source code-contradiction for reentry', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('truth-freeze'), 'detent-code SKILL.md should contain truth-freeze');
+  assert.ok(content.includes('code-contradiction'), 'detent-code SKILL.md should contain code-contradiction');
+});
+
+// --- T75: /detent:code SKILL.md contains reentry_depth limit check ---
+test('/detent:code SKILL.md contains reentry_depth limit check', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('reentry_depth'), 'detent-code SKILL.md should contain reentry_depth');
+  assert.ok(content.includes('>= 2'), 'detent-code SKILL.md should contain >= 2 for depth limit check');
+});
+
+// --- T76: /detent:code SKILL.md contains VALIDATION FAILED (output validation after each agent spawn) ---
+test('/detent:code SKILL.md contains VALIDATION FAILED (output validation after each agent spawn)', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('VALIDATION FAILED'), 'detent-code SKILL.md should contain VALIDATION FAILED checks');
+});
+
+// --- T77: /detent:code SKILL.md contains git commit with unit number ---
+test('/detent:code SKILL.md contains git commit with unit number', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('git commit'), 'detent-code SKILL.md should contain git commit');
+  assert.ok(content.includes('UNIT-'), 'detent-code SKILL.md should contain UNIT- in git commit context');
+});
+
+// --- T78: /detent:code SKILL.md contains iteration exhaustion gate (5 iterations) ---
+test('/detent:code SKILL.md contains iteration exhaustion gate (5 iterations)', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  const has5IterMsg = content.includes('5 iterations') || content.includes('failed after 5');
+  assert.ok(has5IterMsg, 'detent-code SKILL.md should contain "5 iterations" or "failed after 5"');
+  assert.ok(content.includes('AskUserQuestion'), 'detent-code SKILL.md should contain AskUserQuestion for iteration exhaustion gate');
+});
+
+// --- T79: /detent:code SKILL.md spawn calls use --agent parameter ---
+test('/detent:code SKILL.md spawn calls use --agent parameter', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  const spawnLines = content.split('\n').filter(l => l.includes('detent-tools.cjs spawn'));
+  assert.ok(spawnLines.length > 0, 'SKILL.md should contain detent-tools.cjs spawn lines');
+  for (const line of spawnLines) {
+    assert.ok(line.includes('--agent'), `Spawn line should contain --agent parameter: ${line.slice(0, 100)}`);
+  }
+});
+
+// --- T80: /detent:code SKILL.md contains stale verdict cleanup (rm -f evaluator-verdict.json) ---
+test('/detent:code SKILL.md contains stale verdict cleanup (rm -f evaluator-verdict.json)', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  assert.ok(content.includes('rm -f .detent/code/evaluator-verdict.json'), 'detent-code SKILL.md should contain rm -f .detent/code/evaluator-verdict.json for stale verdict cleanup');
+});
+
+// --- T81: /detent:code SKILL.md contains resume detection for crash recovery ---
+test('/detent:code SKILL.md contains resume detection for crash recovery', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  const hasResume = content.includes('Resuming') || content.includes('resume');
+  assert.ok(hasResume, 'detent-code SKILL.md should contain "Resuming" or "resume" for crash recovery path');
+  assert.ok(content.includes('"coding"'), 'detent-code SKILL.md should contain "coding" pipeline_stage check for resume detection');
+});
+
+// --- T82: /detent:code SKILL.md uses manifest files for git add (not git add -A) ---
+test('/detent:code SKILL.md uses manifest files for git add (not git add -A)', () => {
+  const skillPath = path.join(__dirname, '..', '.claude', 'skills', 'detent-code', 'SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  const hasManifestFiles = content.includes('files_created') || content.includes('files_modified');
+  assert.ok(hasManifestFiles, 'detent-code SKILL.md should use files_created or files_modified from manifest for git add');
+  assert.ok(!content.includes('git add -A'), 'detent-code SKILL.md should NOT contain git add -A');
+  assert.ok(!content.includes('git add .'), 'detent-code SKILL.md should NOT contain git add . (blanket staging)');
+});
+
 // --- cleanup ---
 try {
   fs.rmSync(tmpDir, { recursive: true, force: true });

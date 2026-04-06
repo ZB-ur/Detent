@@ -18,15 +18,14 @@ Constraint propagation through a truth surface that ensures every agent decision
 - [x] Config system (.detent/config.json) with mode and pipeline toggles — Validated in Phase 1
 - [x] Agent prompt templates for Planning stages (D-Critique, G-Red/Blue, H-Review, J-Compile) — Validated in Phase 3
 - [x] Playbook migration from ECL (stage-playbook, subagent-protocol, handoff-quality-bar) — Validated in Phase 3
+- [x] Agent prompt templates for Coding stage (Coder, Evaluator) — Validated in Phase 4
+- [x] Coding-Evaluator iteration loop with max iteration limit — Validated in Phase 4
+- [x] Reentry mechanism for cross-stage rollback when planning-level contradictions surface during coding — Validated in Phase 4
+- [x] Algedonic signal system for urgent escalation to human — Validated in Phase 4
 
 ### Active
 
 - [ ] 5 workflow skills: /detent:setup, /detent:discovery, /detent:plan, /detent:code, /detent:verify, /detent:achieve
-- [ ] Agent prompt templates for Coding stage (Coder, Evaluator)
-- [ ] Async behavior logging via Gemini CLI hook (zero intrusion on core agent prompts)
-- [ ] Coding-Evaluator iteration loop with max iteration limit
-- [ ] Reentry mechanism for cross-stage rollback when planning-level contradictions surface during coding
-- [ ] Algedonic signal system for urgent escalation to human
 - [ ] Web UI Layer 1: pipeline configuration (repo-level, one-time setup)
 - [ ] Web UI Layer 2: runtime dashboard with real-time monitoring of multiple parallel pipelines
 - [ ] Process management: spawn/monitor Claude Code instances via stream-json + file watch dual channel

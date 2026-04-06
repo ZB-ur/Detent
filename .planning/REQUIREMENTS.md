@@ -37,17 +37,17 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Coding Quality Loop
 
-- [ ] **CODE-01**: Coder agent executes one implementation unit at a time, producing complete runnable code
-- [ ] **CODE-02**: Evaluator agent tests each unit via structured criteria and returns PASS/FAIL with specific technical feedback (format: `[file:line] expected X, got Y`)
-- [ ] **CODE-03**: On FAIL, Coder receives Evaluator feedback and retries (max 5 iterations per unit)
-- [ ] **CODE-04**: On PASS, unit is git committed and pipeline advances to next unit
+- [x] **CODE-01**: Coder agent executes one implementation unit at a time, producing complete runnable code
+- [x] **CODE-02**: Evaluator agent tests each unit via structured criteria and returns PASS/FAIL with specific technical feedback (format: `[file:line] expected X, got Y`)
+- [x] **CODE-03**: On FAIL, Coder receives Evaluator feedback and retries (max 5 iterations per unit)
+- [x] **CODE-04**: On PASS, unit is git committed and pipeline advances to next unit
 
 ### Recovery & Escalation
 
-- [ ] **RECOV-01**: Algedonic signal: any agent can flag a critical contradiction that bypasses normal flow and escalates to human
-- [ ] **RECOV-02**: Cross-stage reentry: Evaluator or Verification stage can trigger rollback to a specific Planning substage (A/B/C/E/G/H)
-- [ ] **RECOV-03**: Reentry carries the specific contradiction as a new frozen constraint, preventing the same error from recurring
-- [ ] **RECOV-04**: Reentry depth limit (max 2 rollbacks per pipeline run) with escalation to human on breach
+- [x] **RECOV-01**: Algedonic signal: any agent can flag a critical contradiction that bypasses normal flow and escalates to human
+- [x] **RECOV-02**: Cross-stage reentry: Evaluator or Verification stage can trigger rollback to a specific Planning substage (A/B/C/E/G/H)
+- [x] **RECOV-03**: Reentry carries the specific contradiction as a new frozen constraint, preventing the same error from recurring
+- [x] **RECOV-04**: Reentry depth limit (max 2 rollbacks per pipeline run) with escalation to human on breach
 
 ### Observability
 
@@ -114,14 +114,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLAN-03 | Phase 3 | Complete |
 | PLAN-04 | Phase 3 | Complete |
 | PLAN-05 | Phase 3 | Complete |
-| CODE-01 | Phase 4 | Pending |
-| CODE-02 | Phase 4 | Pending |
-| CODE-03 | Phase 4 | Pending |
-| CODE-04 | Phase 4 | Pending |
-| RECOV-01 | Phase 4 | Pending |
-| RECOV-02 | Phase 4 | Pending |
-| RECOV-03 | Phase 4 | Pending |
-| RECOV-04 | Phase 4 | Pending |
+| CODE-01 | Phase 4 | Complete |
+| CODE-02 | Phase 4 | Complete |
+| CODE-03 | Phase 4 | Complete |
+| CODE-04 | Phase 4 | Complete |
+| RECOV-01 | Phase 4 | Complete |
+| RECOV-02 | Phase 4 | Complete |
+| RECOV-03 | Phase 4 | Complete |
+| RECOV-04 | Phase 4 | Complete |
 | OBS-01 | Phase 5 | Pending |
 | OBS-02 | Phase 5 | Pending |
 | OBS-03 | Phase 5 | Pending |

@@ -6,9 +6,9 @@ Detent is a control-theory harness framework for multi-agent orchestration in Cl
 
 ## Milestones
 
-- 📋 **M1 Engine** - Phases 1-2 (state infrastructure + pipeline skeleton)
-- 📋 **M2 Agents** - Phases 3-5 (truth surface, adversarial agents, coding loop, observability)
-- 📋 **M3 Web UI** - Phase 6 (visibility and configuration layer)
+- **M1 Engine** - Phases 1-2 (state infrastructure + pipeline skeleton)
+- **M2 Agents** - Phases 3-5 (truth surface, adversarial agents, coding loop, observability)
+- **M3 Web UI** - Phase 6 (visibility and configuration layer)
 
 ## Phases
 
@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 1: State Infrastructure** - CLI tool, .detent/ schemas, and setup skill — the foundation everything else writes to
 - [x] **Phase 2: Pipeline Skeleton** - Five workflow skills and two-mode gate architecture — end-to-end pipeline that proves session bridging before agents exist (completed 2026-04-05)
 - [x] **Phase 3: Truth Surface and Planning Agents** - Constraint ledger, frozen decisions, and adversarial planning agent templates (D/G/H/J) (completed 2026-04-06)
-- [ ] **Phase 4: Coding Loop and Recovery** - Coder/Evaluator adversarial loop, cross-stage reentry, algedonic signal routing
+- [x] **Phase 4: Coding Loop and Recovery** - Coder/Evaluator adversarial loop, cross-stage reentry, algedonic signal routing (completed 2026-04-05)
 - [ ] **Phase 5: Observability** - Gemini CLI async behavior logging, raw JSONL capture, locale-aware outputs
 - [ ] **Phase 6: Web UI** - Pipeline configuration page and real-time runtime dashboard with multi-pipeline support
 
@@ -84,7 +84,10 @@ Plans:
   3. When any agent raises an algedonic signal, the pipeline immediately halts and surfaces the contradiction to the human — bypassing all normal gate logic
   4. A cross-stage reentry triggered by the Evaluator rolls back to the specified Planning substage and injects the contradiction as a new frozen constraint in constraint-ledger.md
   5. When reentry_depth reaches 2, further reentry triggers human escalation instead of another rollback
-**Plans**: TBD
+**Plans:** 2/2 plans complete
+Plans:
+- [x] 04-01-PLAN.md — CLI extensions (total_units intField, truth-freeze --source bypass), Coder/Evaluator agent templates, playbook extension, Phase 4 tests
+- [x] 04-02-PLAN.md — /detent:code skill rewrite as Coder/Evaluator orchestrator with iteration loop, verdict routing, reentry, algedonic handling
 
 ### Phase 5: Observability
 **Goal**: Every pipeline run produces structured behavior logs asynchronously without intruding on core agent prompts, and all outputs respect the locale setting
@@ -118,6 +121,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. State Infrastructure | M1 Engine | 2/2 | Complete |  |
 | 2. Pipeline Skeleton | M1 Engine | 2/2 | Complete   | 2026-04-05 |
 | 3. Truth Surface and Planning Agents | M2 Agents | 3/3 | Complete | 2026-04-06 |
-| 4. Coding Loop and Recovery | M2 Agents | 0/? | Not started | - |
+| 4. Coding Loop and Recovery | M2 Agents | 2/2 | Complete   | 2026-04-05 |
 | 5. Observability | M2 Agents | 0/? | Not started | - |
 | 6. Web UI | M3 Web UI | 0/? | Not started | - |
