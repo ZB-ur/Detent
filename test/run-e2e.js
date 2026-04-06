@@ -199,10 +199,17 @@ function restore() {
     }
     fs.rmSync(path.join(detentDir, 'plan'), { recursive: true, force: true });
     fs.rmSync(path.join(detentDir, 'discovery'), { recursive: true, force: true });
+    fs.rmSync(path.join(detentDir, 'code'), { recursive: true, force: true });
     fs.rmSync(backupDir, { recursive: true, force: true });
   } else {
     fs.rmSync(path.join(detentDir, 'plan'), { recursive: true, force: true });
     fs.rmSync(path.join(detentDir, 'discovery'), { recursive: true, force: true });
+    fs.rmSync(path.join(detentDir, 'code'), { recursive: true, force: true });
+  }
+  // Clean up source files created by Coder agent during E2E
+  for (const p of ['src', 'kv.js']) {
+    const full = path.join(PROJECT_ROOT, p);
+    if (fs.existsSync(full)) fs.rmSync(full, { recursive: true, force: true });
   }
 }
 
@@ -397,13 +404,15 @@ function stagePlan() {
 }
 
 // ============================================================
-// Stage: code (placeholder — will be implemented in Phase 4)
+// Stage: code
 // ============================================================
 
 function stageCode() {
   console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(' E2E ► CODE STAGE');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+
+  const codeDir = path.join(detentDir, 'code');
 
   // Load plan fixtures as input for code stage
   if (!hasFixtures('plan')) {
@@ -427,10 +436,130 @@ function stageCode() {
     assert.ok(c.includes('status: FROZEN'), 'no FROZEN entries in fixture');
   });
 
-  // TODO: Phase 4 — spawn Coder + Evaluator using handoff.md as input
-  skip('coder agent spawn', 'Phase 4 not yet implemented');
-  skip('evaluator agent spawn', 'Phase 4 not yet implemented');
-  skip('code artifact validation', 'Phase 4 not yet implemented');
+  if (USE_FIXTURES) {
+    // Load code fixtures — skip agent spawns
+    loadFixtures('code', codeDir);
+    // Also restore source files created by Coder
+    if (hasFixtures('code-src')) {
+      const srcFixDir = fixtureDir('code-src');
+      for (const f of fs.readdirSync(srcFixDir)) {
+        const src = path.join(srcFixDir, f);
+        if (fs.statSync(src).isDirectory()) {
+          fs.cpSync(src, path.join(PROJECT_ROOT, f), { recursive: true });
+        } else {
+          fs.copyFileSync(src, path.join(PROJECT_ROOT, f));
+        }
+      }
+    }
+  } else {
+    // Prepare workspace
+    fs.rmSync(codeDir, { recursive: true, force: true });
+    fs.mkdirSync(codeDir, { recursive: true });
+
+    // Set state to planning (so coding stage sees fresh start)
+    run(`state-write --dir "${PROJECT_ROOT}" --pipeline_stage planning`);
+
+    // --- Coder: UNIT-01 ---
+    console.log('--- Stage 1/2: Coder (UNIT-01) ---');
+    const coderResult = spawnAgent('coder',
+      'Read .detent/plan/handoff.md and execute UNIT-01.');
+    test('coder exits cleanly', () => {
+      assert.strictEqual(coderResult.code, 0, `exit ${coderResult.code}: ${coderResult.stderr}`);
+    });
+
+    // --- Evaluator: UNIT-01 ---
+    console.log('\n--- Stage 2/2: Evaluator (UNIT-01) ---');
+    const evalResult = spawnAgent('evaluator',
+      'Evaluate UNIT-01 from .detent/plan/handoff.md. Check .detent/code/coder-manifest.json for files created.');
+    test('evaluator exits cleanly', () => {
+      assert.strictEqual(evalResult.code, 0, `exit ${evalResult.code}: ${evalResult.stderr}`);
+    });
+  }
+
+  // --- Artifact Validation (runs regardless of spawn vs fixture) ---
+  console.log('\n--- Artifact Validation ---');
+
+  test('coder-manifest.json exists and is valid JSON', () => {
+    const f = path.join(codeDir, 'coder-manifest.json');
+    assert.ok(fs.existsSync(f), 'coder-manifest.json missing');
+    const m = JSON.parse(fs.readFileSync(f, 'utf8'));
+    assert.ok(m.unit, 'missing unit field');
+    assert.ok(m.unit.includes('UNIT-01'), `expected UNIT-01, got ${m.unit}`);
+    assert.ok(Array.isArray(m.files_created) || Array.isArray(m.files_modified),
+      'missing files_created or files_modified array');
+    console.log(`        unit: ${m.unit}, files: ${JSON.stringify(m.files_created || m.files_modified)}`);
+  });
+
+  test('coder created source file(s) for UNIT-01', () => {
+    // UNIT-01 should create src/store.js per handoff.md
+    const f = path.join(codeDir, 'coder-manifest.json');
+    const m = JSON.parse(fs.readFileSync(f, 'utf8'));
+    const allFiles = [...(m.files_created || []), ...(m.files_modified || [])];
+    assert.ok(allFiles.length > 0, 'no files in manifest');
+    for (const fp of allFiles) {
+      const full = path.join(PROJECT_ROOT, fp);
+      assert.ok(fs.existsSync(full), `manifest lists ${fp} but file not found`);
+    }
+    console.log(`        verified ${allFiles.length} file(s) exist on disk`);
+  });
+
+  test('evaluator-verdict.json exists and is valid JSON', () => {
+    const f = path.join(codeDir, 'evaluator-verdict.json');
+    assert.ok(fs.existsSync(f), 'evaluator-verdict.json missing');
+    const v = JSON.parse(fs.readFileSync(f, 'utf8'));
+    assert.ok(['PASS', 'FAIL'].includes(v.verdict), `bad verdict: ${v.verdict}`);
+    assert.ok('algedonic' in v, 'missing algedonic field');
+    assert.ok('reentry_requested' in v, 'missing reentry_requested field');
+    assert.ok('issues' in v, 'missing issues field');
+    assert.ok(Array.isArray(v.issues), 'issues is not an array');
+    console.log(`        verdict: ${v.verdict}, issues: ${v.issues.length}, algedonic: ${v.algedonic}`);
+  });
+
+  test('evaluator verdict has all required schema fields', () => {
+    const f = path.join(codeDir, 'evaluator-verdict.json');
+    const v = JSON.parse(fs.readFileSync(f, 'utf8'));
+    const required = ['verdict', 'issues', 'algedonic', 'reentry_requested', 'contradiction'];
+    for (const field of required) {
+      assert.ok(field in v, `missing required field: ${field}`);
+    }
+  });
+
+  test('evaluator algedonic is false (no frozen constraint violation)', () => {
+    const f = path.join(codeDir, 'evaluator-verdict.json');
+    const v = JSON.parse(fs.readFileSync(f, 'utf8'));
+    assert.strictEqual(v.algedonic, false, `expected algedonic=false, got ${v.algedonic}`);
+  });
+
+  test('evaluator reentry_requested is false (no planning contradiction)', () => {
+    const f = path.join(codeDir, 'evaluator-verdict.json');
+    const v = JSON.parse(fs.readFileSync(f, 'utf8'));
+    assert.strictEqual(v.reentry_requested, false,
+      `expected reentry_requested=false, got ${v.reentry_requested}`);
+  });
+
+  // --- Save fixtures if requested ---
+  if (SAVE_FIXTURES) {
+    console.log('\n--- Saving Fixtures ---');
+    saveFixtures('code', codeDir);
+    // Save source files too so --fixtures can restore them
+    const srcFixDir = fixtureDir('code-src');
+    fs.mkdirSync(srcFixDir, { recursive: true });
+    try {
+      const m = JSON.parse(fs.readFileSync(path.join(codeDir, 'coder-manifest.json'), 'utf8'));
+      const allFiles = [...(m.files_created || []), ...(m.files_modified || [])];
+      for (const fp of allFiles) {
+        const src = path.join(PROJECT_ROOT, fp);
+        const dest = path.join(srcFixDir, fp);
+        if (fs.existsSync(src)) {
+          fs.mkdirSync(path.dirname(dest), { recursive: true });
+          fs.copyFileSync(src, dest);
+        }
+      }
+      console.log(`  [e2e] Saved code-src fixtures`);
+    } catch (_) {
+      console.log(`  [e2e] WARNING: could not save code-src fixtures`);
+    }
+  }
 }
 
 // ============================================================
